@@ -7,3 +7,19 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+
+model Pokemon {
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  type1   Type   @relation("PrimaryType", fields: [type1Id], references: [id])
+  type1Id Int
+  type2   Type?  @relation("SecondaryType", fields: [type2Id], references: [id])
+  type2Id Int?
+}
+
+model Type {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  pokemons1 Pokemon[] @relation("PrimaryType")
+  pokemons2 Pokemon[] @relation("SecondaryType")
+}
