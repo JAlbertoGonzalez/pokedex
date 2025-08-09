@@ -1,10 +1,40 @@
 "use client";
 import { api } from "@/trpc/react";
 import Link from "next/link";
+import { useRef } from "react";
 
 export function Sidebar() {
-  // Obtener la primera página de pokémons (20 por defecto)
-  const { data, isLoading, error } = api.pokemon.getAll.useQuery({ skip: 0, take: 30 });
+  // Infinite scroll con useInfiniteQuery
+  const take = 30;
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = api.pokemon.getAllInfinite.useInfiniteQuery(
+    {
+      take,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
+
+  // Referencia al contenedor para detectar scroll
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Detectar scroll al final y cargar más
+  const handleScroll = () => {
+    const el = listRef.current;
+    if (!el || isFetchingNextPage || !hasNextPage) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+      if (hasNextPage) {
+        void fetchNextPage();
+      }
+    }
+  };
 
   return (
     <>
@@ -25,9 +55,13 @@ export function Sidebar() {
         <h2 className="text-purple-400 font-bold mb-2">Pokémons</h2>
         {isLoading && <div className="text-gray-400">Cargando...</div>}
         {error && <div className="text-red-400">Error al cargar</div>}
-  <div className="overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-[#23214a]">
+        <div
+          className="overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-[#23214a]"
+          ref={listRef}
+          onScroll={handleScroll}
+        >
           <ul className="flex flex-col gap-1">
-            {data?.pokemons?.map((pokemon) => (
+            {data?.pages.flatMap((page) => page.pokemons).map((pokemon) => (
               <li key={pokemon.id}>
                 <Link href={`/pokedex/${pokemon.id}`} className="hover:text-purple-300 flex gap-2 items-center">
                   <span className="font-mono text-xs bg-[#23214a] px-2 py-1 rounded">#{pokemon.id.toString().padStart(3, "0")}</span>
@@ -36,6 +70,12 @@ export function Sidebar() {
               </li>
             ))}
           </ul>
+          {isFetchingNextPage && hasNextPage && (
+            <div className="flex justify-center items-center py-4">
+              <span className="animate-spin rounded-full h-6 w-6 border-4 border-yellow-400 border-t-transparent mr-3"></span>
+              <span className="text-yellow-400 font-bold text-lg">Cargando más...</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

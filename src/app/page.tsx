@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { Sidebar } from "@/app/_components/Sidebar";
 import { api, HydrateClient } from "@/trpc/server";
 
