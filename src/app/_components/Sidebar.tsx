@@ -9,7 +9,7 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar escritorio */}
-      <aside className="w-64 bg-[#1a1833] p-4 flex-shrink-0 hidden md:block">
+  <aside className="w-64 bg-[#1a1833] p-4 flex-shrink-0 hidden md:block">
         <nav className="flex flex-col gap-4">
           <Link href="/" className="font-bold text-lg hover:text-purple-400 transition">Inicio</Link>
           <Link href="/pokedex" className="hover:text-purple-400 transition">Pokedex</Link>
@@ -18,15 +18,18 @@ export function Sidebar() {
             <h2 className="text-purple-400 font-bold mb-2">Pokémons</h2>
             {isLoading && <div className="text-gray-400">Cargando...</div>}
             {error && <div className="text-red-400">Error al cargar</div>}
-            <ul className="flex flex-col gap-1">
-              {data?.pokemons?.map((pokemon) => (
-                <li key={pokemon.id}>
-                  <Link href={`/pokedex/${pokemon.id}`} className="hover:text-purple-300">
-                    {pokemon.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="h-full overflow-y-auto">
+              <ul className="flex flex-col gap-1">
+                {data?.pokemons?.map((pokemon) => (
+                  <li key={pokemon.id}>
+                    <Link href={`/pokedex/${pokemon.id}`} className="hover:text-purple-300 flex gap-2 items-center">
+                      <span className="font-mono text-xs bg-[#23214a] px-2 py-1 rounded">#{pokemon.id.toString().padStart(3, "0")}</span>
+                      <span className="capitalize">{pokemon.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </nav>
       </aside>
