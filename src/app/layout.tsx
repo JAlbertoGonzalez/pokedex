@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import { Sidebar } from "@/app/_components/Sidebar";
 
 export const metadata: Metadata = {
   title: "Pokédex Alberto",
@@ -22,7 +23,12 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geist.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <div className="min-h-screen flex bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+            <Sidebar />
+            <main className="flex-1 flex flex-col h-screen overflow-y-auto">{children}</main>
+          </div>
+        </TRPCReactProvider>
       </body>
     </html>
   );

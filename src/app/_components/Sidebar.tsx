@@ -72,8 +72,7 @@ export function Sidebar() {
           </ul>
           {isFetchingNextPage && hasNextPage && (
             <div className="flex justify-center items-center py-4">
-              <span className="animate-spin rounded-full h-6 w-6 border-4 border-yellow-400 border-t-transparent mr-3"></span>
-              <span className="text-yellow-400 font-bold text-lg">Cargando más...</span>
+              <span className="animate-spin rounded-full h-6 w-6 border-4 border-yellow-400 border-t-transparent"></span>
             </div>
           )}
         </div>
