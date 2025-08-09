@@ -1,6 +1,6 @@
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import axios from "axios";
 import { z } from "zod";
-
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const pokemonRouter = createTRPCRouter({
   hello: publicProcedure
@@ -18,7 +18,7 @@ export const pokemonRouter = createTRPCRouter({
       take: z.number().min(1).max(50).default(20),
       search: z.string().optional(),
     }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       // Tipado de salida
       const outputSchema = z.object({
         pokemons: z.array(z.object({
@@ -29,19 +29,25 @@ export const pokemonRouter = createTRPCRouter({
       });
 
       const { skip, take, search } = input;
-      const where = search
-        ? { name: { contains: search, mode: "insensitive" } }
-        : undefined;
 
-      const pokemons = await ctx.db.pokemon.findMany({
-        select: { id: true, name: true },
-        where,
-        orderBy: { id: "asc" },
-        skip,
-        take,
-      });
-      const total = await ctx.db.pokemon.count({ where });
+      // Tipos para la PokéAPI
+      type PokeApiListResponse = {
+        results: Array<{ name: string; url: string }>;
+      };
 
-      return outputSchema.parse({ pokemons, total });
+      // Obtener la lista de pokémons desde la PokéAPI
+      const { data } = await axios.get<PokeApiListResponse>("https://pokeapi.co/api/v2/pokemon?limit=151");
+      let pokemons = data.results.map((poke, idx) => ({ id: idx + 1, name: poke.name }));
+
+      // Filtrar por búsqueda si aplica
+      if (search) {
+        pokemons = pokemons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+      }
+
+      const total = pokemons.length;
+      // Paginación
+      const paginated = pokemons.slice(skip, skip + take);
+
+      return outputSchema.parse({ pokemons: paginated, total });
     }),
 });
