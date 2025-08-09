@@ -1,12 +1,10 @@
-
+"use client";
+import { api } from "@/trpc/react";
 import Link from "next/link";
-import { api } from "../../trpc/react";
-
 
 export function Sidebar() {
   // Obtener la primera página de pokémons (20 por defecto)
   const { data, isLoading, error } = api.pokemon.getAll.useQuery({ skip: 0, take: 20 });
-  type PokemonType = { id: number; name: string };
 
   return (
     <>
@@ -21,7 +19,7 @@ export function Sidebar() {
             {isLoading && <div className="text-gray-400">Cargando...</div>}
             {error && <div className="text-red-400">Error al cargar</div>}
             <ul className="flex flex-col gap-1">
-              {(data?.pokemons as PokemonType[] | undefined)?.map((pokemon) => (
+              {data?.pokemons?.map((pokemon) => (
                 <li key={pokemon.id}>
                   <Link href={`/pokedex/${pokemon.id}`} className="hover:text-purple-300">
                     {pokemon.name}

@@ -10,7 +10,8 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { db } from "~/server/db";
+import { db } from "@/server/db";
+import type { PrismaClient } from "@prisma/client";
 
 /**
  * 1. CONTEXT

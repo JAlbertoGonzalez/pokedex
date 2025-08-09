@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { Sidebar } from "~/app/_components/Sidebar";
-import { api, HydrateClient } from "~/trpc/server";
+import { Sidebar } from "@/app/_components/Sidebar";
+import { api, HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
   const hello = await api.pokemon.hello({ text: "from tRPC" });
