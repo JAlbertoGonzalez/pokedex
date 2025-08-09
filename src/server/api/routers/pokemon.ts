@@ -58,7 +58,7 @@ export const pokemonRouter = createTRPCRouter({
         take: z.number().min(1).max(50).default(20),
         search: z.string().optional(),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input, ctx }) => {
 
         await new Promise<void>((resolve) => setTimeout(resolve, 1000));
         // Tipado de salida
@@ -78,7 +78,7 @@ export const pokemonRouter = createTRPCRouter({
         };
 
         // Obtener la lista de pokémons desde la PokéAPI
-        const { data } = await axios.get<PokeApiListResponse>("https://pokeapi.co/api/v2/pokemon?limit=151");
+        const { data } = await ctx.axios.get<PokeApiListResponse>("https://pokeapi.co/api/v2/pokemon");
         let pokemons = data.results.map((poke, idx) => ({ id: idx + 1, name: poke.name }));
 
         // Filtrar por búsqueda si aplica

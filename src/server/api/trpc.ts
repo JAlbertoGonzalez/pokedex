@@ -10,8 +10,19 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import Axios, { type AxiosInstance } from 'axios';
+
 import { db } from "@/server/db";
 import type { PrismaClient } from "@prisma/client";
+import { setupCache } from "axios-cache-interceptor";
+
+/**
+ * Axios Cache Interceptor
+ */
+
+const instance = Axios.create()
+const axios = setupCache(instance)
+
 
 /**
  * 1. CONTEXT
@@ -28,10 +39,11 @@ import type { PrismaClient } from "@prisma/client";
 export const createTRPCContext = (opts: { headers: Headers }) => {
   return {
     db,
+    axios,
     ...opts,
   }
 }
-export type TRPCContext = { db: PrismaClient; headers: Headers };
+export type TRPCContext = { db: PrismaClient; headers: Headers; axios: AxiosInstance };
 
 /**
  * 2. INITIALIZATION
