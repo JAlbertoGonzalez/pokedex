@@ -25,12 +25,13 @@ import type { PrismaClient } from "@prisma/client";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = (opts: { headers: Headers }) => {
   return {
     db,
     ...opts,
-  };
-};
+  }
+}
+export type TRPCContext = { db: PrismaClient; headers: Headers };
 
 /**
  * 2. INITIALIZATION
@@ -39,7 +40,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<TRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
