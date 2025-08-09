@@ -9,10 +9,10 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar escritorio */}
-  <aside className="w-64 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block border-4 border-purple-700 rounded-xl box-border">
+  <aside className="w-64 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border">
     <div className="h-full flex flex-col">
       {/* Buscador */}
-      <div className="mb-4 border-4 border-purple-400 rounded-md p-2">
+  <div className="mb-4 rounded-md p-2">
         <input
           type="text"
           placeholder="Buscar Pokémon..."
@@ -21,11 +21,11 @@ export function Sidebar() {
         />
       </div>
       {/* Listado de Pokémon */}
-      <div className="border-4 border-yellow-400 rounded-md p-2 flex-1 min-h-0 flex flex-col">
+  <div className="rounded-md p-2 flex-1 min-h-0 flex flex-col">
         <h2 className="text-purple-400 font-bold mb-2">Pokémons</h2>
         {isLoading && <div className="text-gray-400">Cargando...</div>}
         {error && <div className="text-red-400">Error al cargar</div>}
-        <div className="overflow-y-auto flex-1 min-h-0">
+  <div className="overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-[#23214a]">
           <ul className="flex flex-col gap-1">
             {data?.pokemons?.map((pokemon) => (
               <li key={pokemon.id}>
