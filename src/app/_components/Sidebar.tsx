@@ -1,5 +1,6 @@
 "use client";
 import { api } from "@/trpc/react";
+import { SidebarElement } from "./SidebarElement";
 import Link from "next/link";
 import { useRef } from "react";
 
@@ -39,7 +40,7 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar escritorio */}
-  <aside className="w-64 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border">
+  <aside className="w-80 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border">
     <div className="h-full flex flex-col">
       {/* Buscador */}
   <div className="mb-4 rounded-md p-2">
@@ -62,14 +63,7 @@ export function Sidebar() {
         >
           <div className="grid grid-cols-1 gap-2">
             {data?.pages.flatMap((page) => page.pokemons).map((pokemon) => (
-              <Link
-                key={pokemon.id}
-                href={`/pokedex/${pokemon.id}`}
-                className="hover:text-purple-300 grid grid-cols-2 items-center bg-[#23214a] rounded p-2 transition"
-              >
-                <span className="font-mono text-xs bg-purple-900 text-yellow-300 px-2 py-1 rounded">#{pokemon.id.toString().padStart(3, "0")}</span>
-                <span className="capitalize text-sm text-white">{pokemon.name}</span>
-              </Link>
+              <SidebarElement key={pokemon.id} id={pokemon.id} name={pokemon.name} />
             ))}
           </div>
           {isFetchingNextPage && hasNextPage && (
