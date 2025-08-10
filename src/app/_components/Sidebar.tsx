@@ -40,7 +40,7 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar escritorio */}
-  <aside className="w-80 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border">
+  <aside className="w-96 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border overflow-x-hidden">
     <div className="h-full flex flex-col">
       {/* Buscador */}
   <div className="mb-4 rounded-md p-2">
@@ -57,11 +57,11 @@ export function Sidebar() {
         {isLoading && <div className="text-gray-400">Cargando...</div>}
         {error && <div className="text-red-400">Error al cargar</div>}
         <div
-          className="overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-[#23214a]"
+          className="overflow-y-auto overflow-x-hidden flex-1 min-h-0 scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-[#23214a]"
           ref={listRef}
           onScroll={handleScroll}
         >
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-2 w-full">
             {data?.pages.flatMap((page) => page.pokemons).map((pokemon) => (
               <SidebarElement key={pokemon.id} id={pokemon.id} name={pokemon.name} />
             ))}

@@ -14,11 +14,12 @@ export function SidebarElement({ id, name }: { id: number; name: string }) {
   return (
     <Link
       href={`/pokedex/${id}`}
-      className="hover:text-purple-300 grid grid-cols-3 items-center bg-[#23214a] rounded p-2 transition"
+      className="hover:text-purple-300 flex items-center gap-2 bg-[#23214a] rounded p-2 transition w-full"
+      style={{ minWidth: 0 }}
     >
-      <span className="font-mono text-xs bg-purple-900 text-yellow-300 px-2 py-1 rounded">#{id.toString().padStart(3, "0")}</span>
-      <span className="capitalize text-sm text-white">{name}</span>
-      <span className="text-xs text-purple-300">
+      <span className="font-mono text-xs text-yellow-300 rounded" style={{ minWidth: 0 }}>#{id.toString().padStart(3, "0")}</span>
+      <span className="capitalize text-sm text-white break-words flex-1" style={{ minWidth: 0 }}>{name}</span>
+      <span className="text-xs text-purple-300 flex flex-wrap gap-1" style={{ minWidth: 0 }}>
         {isLoading ? "..." : ""}
         {error ? "!" : ""}
         {!isLoading && !error && typeNames.length > 0 ? typeNames.map((type) => <PokemonType key={type} typeName={type} />) : ""}

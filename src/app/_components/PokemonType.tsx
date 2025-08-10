@@ -28,12 +28,12 @@ export function PokemonType({ typeName }: { typeName: string }) {
   const { data, isLoading, error } = api.pokemon.getType.useQuery({ idOrName: typeName });
 
   // Obtener color del tipo
-  const color = POKEMON_TYPE_COLORS.find(t => t.type === typeName)?.color || "#888";
+  const color = POKEMON_TYPE_COLORS.find(t => t.type === typeName)?.color;
 
   if (isLoading) return (
     <span
-      className="text-xs text-white border border-white rounded px-2 py-1"
-      style={{ background: color }}
+  className="text-xs text-white border border-white rounded-xl px-2 py-1"
+      style={{ background: color, textShadow: "0 1px 2px #000, 0 0px 8px #000" }}
     >
       ...
     </span>
@@ -41,7 +41,7 @@ export function PokemonType({ typeName }: { typeName: string }) {
   if (error || !data) return (
     <span
       className="text-xs text-white border border-white rounded px-2 py-1"
-      style={{ background: color }}
+      style={{ background: color, textShadow: "0 1px 2px #000, 0 0px 8px #000" }}
     >
       {typeName}
     </span>
@@ -53,8 +53,8 @@ export function PokemonType({ typeName }: { typeName: string }) {
 
   return (
     <span
-      className="text-xs text-white border border-white rounded px-2 py-1"
-      style={{ background: color }}
+      className="text-xs text-white border border-white rounded-xl px-2 py-1 m-1"
+      style={{ background: color, textShadow: "0 1px 2px #000, 0 0px 8px #000" }}
     >
       {label}
     </span>
