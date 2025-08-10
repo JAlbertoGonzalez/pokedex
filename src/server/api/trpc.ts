@@ -14,14 +14,40 @@ import Axios, { type AxiosInstance } from 'axios';
 
 import { db } from "@/server/db";
 import type { PrismaClient } from "@prisma/client";
-import { setupCache } from "axios-cache-interceptor";
+import { buildStorage, setupCache, type StorageValue } from "axios-cache-interceptor";
+import fs from 'fs';
 
 /**
  * Axios Cache Interceptor
  */
 
+const CACHE_DIR = './cache';
+if (!fs.existsSync(CACHE_DIR)) {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+}
+
 const instance = Axios.create()
-const axios = setupCache(instance)
+const axios = setupCache(instance, {
+  ttl: 60 * 60 * 24, // 1 day
+  storage: buildStorage({
+    async find(key, _currentRequest) {
+      const cacheFile = `${CACHE_DIR}/${key}.json`;
+      if (!fs.existsSync(cacheFile)) {
+        return undefined;
+      }
+      const result = fs.readFileSync(cacheFile, 'utf-8');
+      return JSON.parse(result) as StorageValue;
+    },
+    async set (key, value) {
+      const cacheFile = `${CACHE_DIR}/${key}.json`;
+      fs.writeFileSync(cacheFile, JSON.stringify(value));
+    },
+    async remove(key) {
+      // Won't remove cache
+      // fs.unlinkSync(`${CACHE_DIR}/${key}.json`);
+    }
+  })
+})
 
 
 /**
