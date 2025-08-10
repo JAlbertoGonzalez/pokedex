@@ -60,16 +60,18 @@ export function Sidebar() {
           ref={listRef}
           onScroll={handleScroll}
         >
-          <ul className="flex flex-col gap-1">
+          <div className="grid grid-cols-1 gap-2">
             {data?.pages.flatMap((page) => page.pokemons).map((pokemon) => (
-              <li key={pokemon.id}>
-                <Link href={`/pokedex/${pokemon.id}`} className="hover:text-purple-300 flex gap-2 items-center">
-                  <span className="font-mono text-xs bg-[#23214a] px-2 py-1 rounded">#{pokemon.id.toString().padStart(3, "0")}</span>
-                  <span className="capitalize">{pokemon.name}</span>
-                </Link>
-              </li>
+              <Link
+                key={pokemon.id}
+                href={`/pokedex/${pokemon.id}`}
+                className="hover:text-purple-300 grid grid-cols-2 items-center bg-[#23214a] rounded p-2 transition"
+              >
+                <span className="font-mono text-xs bg-purple-900 text-yellow-300 px-2 py-1 rounded">#{pokemon.id.toString().padStart(3, "0")}</span>
+                <span className="capitalize text-sm text-white">{pokemon.name}</span>
+              </Link>
             ))}
-          </ul>
+          </div>
           {isFetchingNextPage && hasNextPage && (
             <div className="flex justify-center items-center py-4">
               <span className="animate-spin rounded-full h-6 w-6 border-4 border-yellow-400 border-t-transparent"></span>
