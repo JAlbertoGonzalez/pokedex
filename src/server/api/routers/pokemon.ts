@@ -93,4 +93,34 @@ export const pokemonRouter = createTRPCRouter({
 
   return outputSchema.parse({ pokemons: paginated, nextCursor });
       }),
+      getPokemon: publicProcedure
+        .input(z.object({ id: z.number().min(1) }))
+        .query(async ({ input, ctx }) => {
+          const { id } = input;
+
+          // Tipado de salida
+          const outputSchema = z.object({
+            id: z.number(),
+            name: z.string(),
+          });
+
+          // Obtener el pokémon desde la PokéAPI
+          const { data } = await ctx.axios.get<{
+            id: number
+            order: number
+            name: string
+            sprites: {
+              front_default: string
+            }
+            types: {
+              slot: number
+              type: {
+                name: string
+                url: string
+              }
+            }[]
+          }>(`https://pokeapi.co/api/v2/pokemon/${id}`);
+
+          return outputSchema.parse(data);
+        }),
     })
