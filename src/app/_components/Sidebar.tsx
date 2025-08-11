@@ -114,7 +114,7 @@ export function Sidebar() {
                 menu: (base) => ({ ...base, backgroundColor: '#23214a', color: '#fff' }),
                 multiValue: (base, { data }) => {
                   const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#a78bfa';
-                  return { ...base, backgroundColor: color, color: '#23214a', borderRadius: '999px', padding: '6px 16px', margin: '4px', display: 'inline-flex', alignItems: 'center', width: 'auto', minWidth: '0', maxWidth: '100%' };
+                  return { ...base, backgroundColor: color, color: '#23214a', borderRadius: '999px', padding: '2px 8px', margin: '4px', display: 'inline-flex', alignItems: 'center', width: 'auto', minWidth: '0', maxWidth: '100%' };
                 },
                 multiValueLabel: (base, { data }) => {
                   const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#23214a';
