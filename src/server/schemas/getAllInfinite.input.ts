@@ -7,4 +7,5 @@ export const getAllInfiniteInputSchema = z.object({
   types: z.array(z.string()).optional(),
   language: z.string().optional(),
   typeMode: z.enum(["and", "or"]).default("and"),
+  generation: z.number().optional(),
 });

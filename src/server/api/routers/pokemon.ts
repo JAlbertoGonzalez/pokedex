@@ -20,7 +20,7 @@ export const pokemonRouter = createTRPCRouter({
   getAllInfinite: publicProcedure
     .input(getAllInfiniteInputSchema)
   .query(async ({ input, ctx }) => {
-  const { cursor = 0, take, search, types, language = "es", typeMode = "and" } = input;
+  const { cursor = 0, take, search, types, language = "es", typeMode = "and", generation } = input;
       const where: Record<string, unknown> = {};
       if (search) {
         where.name = { _regex: search };
@@ -39,6 +39,9 @@ export const pokemonRouter = createTRPCRouter({
             type: { name: { _in: types } },
           };
         }
+      }
+      if (generation !== undefined) {
+        where.generation_id = { _eq: generation };
       }
   const variables = { limit: take, offset: cursor, where, language };
   const rawData = await ctx.graphql.request(getAllInfiniteQuery, variables);

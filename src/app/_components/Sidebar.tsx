@@ -12,10 +12,14 @@ import Select from "react-select";
 import { LanguageDropdown } from "./LanguageDropdown";
 import { useLanguage } from "./LanguageProvider";
 import { SidebarElement } from "./SidebarElement";
+import { GenerationFilter } from "./GenerationFilter";
 type PokemonPage = { pokemon: PokemonGraphQL[]; nextCursor?: number };
 type TypeOption = { value: string; label: string };
 
 export function Sidebar() {
+  // Estado para la generación seleccionada
+  const [generation, setGeneration] = useState<number | undefined>(undefined);
+  // Obtiene las generaciones desde el endpoint
   const { languageCode } = useLanguage();
   // Estado para el valor del buscador
   const [search, setSearch] = useState("");
@@ -38,7 +42,7 @@ export function Sidebar() {
   const selectedTypeValues = selectedTypes.map((t) => t.value);
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
-    { search: searchDebounced, types: selectedTypeValues, language: languageCode, typeMode },
+    { search: searchDebounced, types: selectedTypeValues, language: languageCode, typeMode, generation },
     {
       getNextPageParam: (lastPage: PokemonPage) => {
         console.log('lastPage', {lastPage})
@@ -119,6 +123,7 @@ export function Sidebar() {
         </div>
         {showOptions && (
           <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
+            <GenerationFilter generation={generation} setGeneration={setGeneration} />
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-purple-300">Filtrar por tipo:</label>
               <button
