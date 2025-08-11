@@ -1,22 +1,25 @@
 "use client";
 
 // Tipos para la paginación de pokémon
-type Pokemon = { id: number; name: string };
-type PokemonPage = { pokemons: Pokemon[]; nextCursor?: number };
+// Tipos para la paginación de pokémon
+import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.types";
+type PokemonPage = { pokemon: PokemonGraphQL[]; nextCursor?: number };
 type TypeOption = { value: string; label: string };
+import { POKEMON_TYPE_COLORS } from "@/app/_components/PokemonType";
 import { api } from "@/trpc/react";
+import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { SidebarElement } from "./SidebarElement";
-import { MoreHorizontal } from "lucide-react";
 import Select from "react-select";
-import { POKEMON_TYPE_COLORS } from "@/app/_components/PokemonType";
+import { SidebarElement } from "./SidebarElement";
 
 export function Sidebar() {
   // Estado para el valor del buscador
   const [search, setSearch] = useState("");
   const [searchDebounced, setSearchDebounced] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<TypeOption[]>([]);
+  // Estado para mostrar/ocultar el JSON raw
+  const [showRaw, setShowRaw] = useState(false);
 
   // Actualiza searchDebounced solo cuando el usuario deja de escribir por 400ms
   useEffect(() => {
@@ -83,8 +86,8 @@ export function Sidebar() {
       {/* Sidebar escritorio */}
   <aside className="w-[28rem] h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border overflow-x-hidden">
     <div className="h-full flex flex-col">
-      {/* Buscador */}
-      <div className="mb-4 rounded-md p-2 flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible', zIndex: 50 }}>
+  {/* Buscador */}
+  <div className="mb-4 rounded-md p-2 flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible', zIndex: 50 }}>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -154,6 +157,21 @@ export function Sidebar() {
             />
           </div>
         )}
+        {/* Collapsable JSON raw */}
+        <div className="mt-2">
+          <button
+            type="button"
+            className="text-xs text-purple-300 underline mb-1"
+            onClick={() => setShowRaw((v) => !v)}
+          >
+            {showRaw ? "Ocultar JSON raw" : "Mostrar JSON raw"}
+          </button>
+          {showRaw && (
+            <pre className="bg-[#23214a] text-white text-xs rounded p-2 max-h-64 overflow-auto border border-purple-400 whitespace-pre-wrap">
+              {JSON.stringify(data, null, 2)}
+            </pre>
+          )}
+        </div>
       </div>
       {/* Listado de Pokémon */}
   <div className="rounded-md p-2 flex-1 min-h-0 flex flex-col">
@@ -166,9 +184,28 @@ export function Sidebar() {
           onScroll={handleScroll}
         >
           <div className="grid grid-cols-1 gap-2 w-full">
-            {data?.pages.flatMap((page: PokemonPage) => page.pokemons).map((pokemon: Pokemon) => (
-              <SidebarElement key={pokemon.id} id={pokemon.id} name={pokemon.name} />
-            ))}
+            {data?.pages.flatMap((page: PokemonPage) => page.pokemon).map((pokemon: PokemonGraphQL) => {
+              // Extraer sprite principal
+              let sprite: { front_default?: string | null } | null = null;
+              const spritesRaw = pokemon.pokemonsprites?.[0]?.sprites;
+              if (spritesRaw && typeof spritesRaw === "object") {
+                if (typeof spritesRaw.front_default === "string") {
+                  sprite = { front_default: spritesRaw.front_default };
+                } else if (spritesRaw.versions && typeof spritesRaw.versions === "object") {
+                  const genV = spritesRaw.versions['generation-v']?.['black-white'];
+                  if (genV && typeof genV.front_default === "string") {
+                    sprite = { front_default: genV.front_default };
+                  }
+                }
+              }
+              // Pasar pokemontypes completo
+              return (
+                <SidebarElement
+                  key={pokemon.id}
+                  pokemonData={pokemon}
+                />
+              );
+            })}
           </div>
           {isFetchingNextPage && hasNextPage && (
             <div className="flex justify-center items-center py-4">
