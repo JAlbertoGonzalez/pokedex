@@ -11,6 +11,7 @@ export const pokemonRouter = createTRPCRouter({
         cursor: z.number().min(1).optional(),
         take: z.number().min(1).max(50).default(20),
         search: z.string().optional(),
+        types: z.array(z.string()).optional(),
       }))
       .query(async ({ input, ctx }) => {
 
@@ -24,7 +25,7 @@ export const pokemonRouter = createTRPCRouter({
           nextCursor: z.number().min(1).optional(),
         });
 
-        const { cursor, take, search } = input;
+  const { cursor, take, search, types } = input;
 
         // Tipos para la PokéAPI
         type PokeApiListResponse = {
@@ -38,6 +39,33 @@ export const pokemonRouter = createTRPCRouter({
         // Filtrar por búsqueda si aplica
         if (search) {
           pokemons = pokemons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+        }
+
+        // Filtrar por tipos si aplica
+        if (types && types.length > 0) {
+          // Cache en memoria para evitar consultas repetidas
+          const typeCache: Record<string, string[]> = {};
+          const filtered: typeof pokemons = [];
+          for (const poke of pokemons) {
+            let pokeTypes: string[] = [];
+            if (poke.name in typeCache) {
+              pokeTypes = typeCache[poke.name] ?? [];
+            } else {
+              try {
+                type PokeApiTypeResponse = { types: Array<{ type: { name: string } }> };
+                const { data: pokeData } = await ctx.axios.get<PokeApiTypeResponse>(`https://pokeapi.co/api/v2/pokemon/${poke.name}`);
+                pokeTypes = pokeData.types.map(t => t.type.name);
+                typeCache[poke.name] = pokeTypes;
+              } catch {
+                pokeTypes = [];
+              }
+            }
+            // Si el pokémon tiene todos los tipos seleccionados
+            if (types.every(type => pokeTypes.includes(type))) {
+              filtered.push(poke);
+            }
+          }
+          pokemons = filtered;
         }
 
   // Paginación

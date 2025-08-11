@@ -3,6 +3,7 @@
 // Tipos para la paginación de pokémon
 type Pokemon = { id: number; name: string };
 type PokemonPage = { pokemons: Pokemon[]; nextCursor?: number };
+type TypeOption = { value: string; label: string };
 import { api } from "@/trpc/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -15,8 +16,7 @@ export function Sidebar() {
   // Estado para el valor del buscador
   const [search, setSearch] = useState("");
   const [searchDebounced, setSearchDebounced] = useState("");
-  const [showOptions, setShowOptions] = useState(false);
-  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState<TypeOption[]>([]);
 
   // Actualiza searchDebounced solo cuando el usuario deja de escribir por 400ms
   useEffect(() => {
@@ -26,15 +26,24 @@ export function Sidebar() {
     return () => clearTimeout(handler);
   }, [search]);
 
+  // Obtener los valores de los tipos seleccionados
+  const selectedTypeValues = selectedTypes.map((t) => t.value);
+
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
-    { search: searchDebounced },
+    { search: searchDebounced, types: selectedTypeValues },
     {
-      getNextPageParam: (lastPage: PokemonPage) => lastPage.nextCursor,
+      getNextPageParam: (lastPage: PokemonPage) => {
+        console.log('lastPage', {lastPage})
+        return lastPage.nextCursor
+      },
     }
   );
 
   // Referencia al contenedor para detectar scroll
   const listRef = useRef<HTMLDivElement>(null);
+
+  // Estado para mostrar/ocultar opciones avanzadas
+  const [showOptions, setShowOptions] = useState(false);
 
   // Detectar scroll al final y cargar más
   const handleScroll = () => {
@@ -105,7 +114,7 @@ export function Sidebar() {
               options={typeOptions}
               value={selectedTypes}
               onChange={selected => {
-                if (selected.length <= 2) setSelectedTypes(selected);
+                if ((selected as TypeOption[]).length <= 2) setSelectedTypes(selected as TypeOption[]);
               }}
               classNamePrefix="react-select"
               placeholder="Selecciona tipos..."
