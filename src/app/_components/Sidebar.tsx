@@ -5,20 +5,32 @@ type Pokemon = { id: number; name: string };
 type PokemonPage = { pokemons: Pokemon[]; nextCursor?: number };
 import { api } from "@/trpc/react";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { SidebarElement } from "./SidebarElement";
 
 export function Sidebar() {
 
+  // Estado para el valor del buscador
+  const [search, setSearch] = useState("");
+  const [searchDebounced, setSearchDebounced] = useState("");
+
+  // Actualiza searchDebounced solo cuando el usuario deja de escribir por 400ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchDebounced(search);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [search]);
+
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
-    {},
+    { search: searchDebounced },
     {
-      getNextPageParam: (lastPage: PokemonPage) => lastPage.nextCursor,
+      getNextPageParam: (lastPage: PokemonPage) => {
+        console.log('lastPage', {lastPage})
+        return lastPage.nextCursor
+      },
     }
   );
-
-  // Infinite scroll con useInfiniteQuery
-
 
   // Referencia al contenedor para detectar scroll
   const listRef = useRef<HTMLDivElement>(null);
@@ -45,7 +57,8 @@ export function Sidebar() {
           type="text"
           placeholder="Buscar Pokémon..."
           className="w-full px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
-          // Aquí puedes añadir lógica de búsqueda/controlado
+          value={search}
+          onChange={e => setSearch(e.target.value)}
         />
       </div>
       {/* Listado de Pokémon */}
