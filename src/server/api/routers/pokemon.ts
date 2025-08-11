@@ -1,5 +1,7 @@
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { pokemonOutputSchema } from "@/server/schemas/pokemon.schema";
+import { typeOutputSchema } from "@/server/schemas/type.schema";
 import { z } from "zod";
 
 export const pokemonRouter = createTRPCRouter({
@@ -50,58 +52,17 @@ export const pokemonRouter = createTRPCRouter({
         .query(async ({ input, ctx }) => {
           const { id } = input;
 
-          // Tipado de salida
-          const outputSchema = z.object({
-            id: z.number(),
-            name: z.string(),
-            order: z.number(),
-            sprites: z.object({
-              front_default: z.string().url(),
-            }),
-            types: z.array(z.object({
-              slot: z.number(),
-              type: z.object({
-                name: z.string(),
-                url: z.string().url(),
-              })
-            }))
-          });
-
           // Obtener el pokémon desde la PokéAPI
-          const { data } = await ctx.axios.get<typeof outputSchema>(`https://pokeapi.co/api/v2/pokemon/${id}`);
+          const { data } = await ctx.axios.get<typeof pokemonOutputSchema>(`https://pokeapi.co/api/v2/pokemon/${id}`);
 
-          return outputSchema.parse(data);
+          return pokemonOutputSchema.parse(data);
         }),
   getType: publicProcedure
     .input(z.object({ idOrName: z.union([z.string(), z.number()]) }))
     .query(async ({ input, ctx }) => {
       const { idOrName } = input;
-      // Tipado de salida
-      const outputSchema = z.object({
-        id: z.number(),
-        name: z.string(),
-        names: z.array(z.object({
-          name: z.string(),
-          language: z.object({
-            name: z.string(),
-            url: z.string().url(),
-          })
-        })),
-        damage_relations: z.object({
-          double_damage_from: z.array(z.object({ name: z.string(), url: z.string().url() })),
-          double_damage_to: z.array(z.object({ name: z.string(), url: z.string().url() })),
-          half_damage_from: z.array(z.object({ name: z.string(), url: z.string().url() })),
-          half_damage_to: z.array(z.object({ name: z.string(), url: z.string().url() })),
-          no_damage_from: z.array(z.object({ name: z.string(), url: z.string().url() })),
-          no_damage_to: z.array(z.object({ name: z.string(), url: z.string().url() })),
-        }),
-        pokemon: z.array(z.object({
-          pokemon: z.object({ name: z.string(), url: z.string().url() }),
-          slot: z.number().optional(),
-        })),
-      });
 
-      const { data } = await ctx.axios.get<typeof outputSchema>(`https://pokeapi.co/api/v2/type/${idOrName}`);
-      return outputSchema.parse(data);
+      const { data } = await ctx.axios.get<typeof typeOutputSchema>(`https://pokeapi.co/api/v2/type/${idOrName}`);
+      return typeOutputSchema.parse(data);
     }),
       })
