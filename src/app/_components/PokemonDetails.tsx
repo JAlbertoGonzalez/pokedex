@@ -1,7 +1,6 @@
-import { getPokemonOutputSchema } from "@/server/schemas/getPokemon.output";
-import { z } from "zod";
-import Image from "next/image";
+import type { getPokemonOutputSchema } from "@/server/schemas/getPokemon.output";
 import React from "react";
+import type { z } from "zod";
 
 // Tipo inferido desde el esquema Zod
 export type PokemonDetailsData = z.infer<typeof getPokemonOutputSchema>;

@@ -3,20 +3,22 @@ import React, { useMemo } from "react";
 import { useLanguage } from "./LanguageProvider";
 
 export const LanguageDropdown = () => {
-  const { languageId, setLanguageId } = useLanguage();
+  const { languageCode, setLanguageCode } = useLanguage();
   const { data, isLoading, error } = api.language.getLanguages.useQuery();
 
+
   const optionsByCurrentLanguage = useMemo(() => {
+    const idToCode: Record<string, string> = { "1": "en", "7": "es", "9": "ja" };
     if (!data) return [];
     return data.language.map(lang => {
       // Busca el nombre de este idioma en el idioma actualmente seleccionado
-      const nameObj = lang.languagenames.find(name => name.local_language_id === languageId);
+      const nameObj = lang.languagenames.find(name => idToCode[String(name.local_language_id)] === languageCode);
       return {
-        value: lang.id,
+        value: idToCode[String(lang.id)],
         label: nameObj ? nameObj.name : lang.name
       };
     });
-  }, [data, languageId]);
+  }, [data, languageCode]);
 
   return (
     <div className="mb-2">
@@ -28,8 +30,8 @@ export const LanguageDropdown = () => {
         <select
           id="language-select"
           className="h-8 px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
-          value={languageId}
-          onChange={e => setLanguageId(Number(e.target.value))}
+          value={languageCode}
+          onChange={e => setLanguageCode(e.target.value)}
         >
           <option value="">Selecciona un idioma</option>
           {optionsByCurrentLanguage.map(option => {

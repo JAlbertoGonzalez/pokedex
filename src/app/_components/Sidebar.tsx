@@ -9,14 +9,14 @@ import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { SidebarElement } from "./SidebarElement";
 import { LanguageDropdown } from "./LanguageDropdown";
+import { useLanguage } from "./LanguageProvider";
+import { SidebarElement } from "./SidebarElement";
 type PokemonPage = { pokemon: PokemonGraphQL[]; nextCursor?: number };
 type TypeOption = { value: string; label: string };
 
 export function Sidebar() {
-  // Estado para el idioma seleccionado
-  const [language, setLanguage] = useState("es");
+  const { languageCode } = useLanguage();
   // Estado para el valor del buscador
   const [search, setSearch] = useState("");
   const [searchDebounced, setSearchDebounced] = useState("");
@@ -36,7 +36,7 @@ export function Sidebar() {
   const selectedTypeValues = selectedTypes.map((t) => t.value);
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
-    { search: searchDebounced, types: selectedTypeValues },
+    { search: searchDebounced, types: selectedTypeValues, language: languageCode },
     {
       getNextPageParam: (lastPage: PokemonPage) => {
         console.log('lastPage', {lastPage})

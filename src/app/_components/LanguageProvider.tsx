@@ -2,17 +2,17 @@ import { api } from "@/trpc/react";
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 type LanguageContextProps = {
-  languageId: number;
-  setLanguageId: (id: number) => void;
-  languageList?: Array<{ id: number; name: string }>;
+  languageCode: string;
+  setLanguageCode: (code: string) => void;
 };
 
 const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [languageId, setLanguageId] = useState<number>(7);
+  // Por defecto español ('es')
+  const [languageCode, setLanguageCode] = useState<string>("es");
   return (
-    <LanguageContext.Provider value={{ languageId, setLanguageId }}>
+    <LanguageContext.Provider value={{ languageCode, setLanguageCode }}>
       {children}
     </LanguageContext.Provider>
   );
