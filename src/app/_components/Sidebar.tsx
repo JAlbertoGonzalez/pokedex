@@ -23,6 +23,8 @@ export function Sidebar() {
   const [selectedTypes, setSelectedTypes] = useState<TypeOption[]>([]);
   // Estado para mostrar/ocultar el JSON raw
   const [showRaw, setShowRaw] = useState(false);
+  // Estado para el modo de filtro de tipos
+  const [typeMode, setTypeMode] = useState<"and" | "or">("and");
 
   // Actualiza searchDebounced solo cuando el usuario deja de escribir por 400ms
   useEffect(() => {
@@ -36,7 +38,7 @@ export function Sidebar() {
   const selectedTypeValues = selectedTypes.map((t) => t.value);
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
-    { search: searchDebounced, types: selectedTypeValues, language: languageCode },
+    { search: searchDebounced, types: selectedTypeValues, language: languageCode, typeMode },
     {
       getNextPageParam: (lastPage: PokemonPage) => {
         console.log('lastPage', {lastPage})
@@ -117,7 +119,18 @@ export function Sidebar() {
         </div>
         {showOptions && (
           <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
-            <label className="text-sm text-purple-300 mb-1">Filtrar por tipo:</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-purple-300">Filtrar por tipo:</label>
+              <button
+                type="button"
+                className={`ml-2 px-3 py-1 rounded-full border border-purple-400 bg-[#23214a] text-xs font-bold transition-colors ${typeMode === "and" ? "text-green-400" : "text-yellow-400"}`}
+                onClick={() => setTypeMode(typeMode === "and" ? "or" : "and")}
+                aria-label="Cambiar modo filtro tipo"
+                title={typeMode === "and" ? "AND (todos los tipos)" : "OR (cualquier tipo)"}
+              >
+                {typeMode === "and" ? "AND" : "OR"}
+              </button>
+            </div>
             <Select
               isMulti
               options={typeOptions}
@@ -161,6 +174,7 @@ export function Sidebar() {
                 },
               }}
             />
+            {/* El switch visual ya está incluido arriba, se elimina el select */}
           </div>
         )}
         {/* Collapsable JSON raw */}
