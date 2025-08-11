@@ -5,7 +5,7 @@ type Pokemon = { id: number; name: string };
 type PokemonPage = { pokemons: Pokemon[]; nextCursor?: number };
 import { api } from "@/trpc/react";
 import Link from "next/link";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SidebarElement } from "./SidebarElement";
 
 export function Sidebar() {
