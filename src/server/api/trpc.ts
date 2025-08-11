@@ -16,6 +16,7 @@ import { db } from "@/server/db";
 import type { PrismaClient } from "@prisma/client";
 import { buildStorage, setupCache, type StorageValue } from "axios-cache-interceptor";
 import fs from 'fs';
+import { GraphQLClient } from "graphql-request";
 
 /**
  * Axios Cache Interceptor
@@ -51,6 +52,11 @@ const axios = setupCache(instance, {
   })
 })
 
+/**
+ * GraphQL Queries
+ */
+
+const graphqlClient = new GraphQLClient("https://graphql.pokeapi.co/v1beta2");
 
 /**
  * 1. CONTEXT
@@ -68,10 +74,11 @@ export const createTRPCContext = (opts: { headers: Headers }) => {
   return {
     db,
     axios,
+    graphql: graphqlClient,
     ...opts,
   }
 }
-export type TRPCContext = { db: PrismaClient; headers: Headers; axios: AxiosInstance };
+export type TRPCContext = { db: PrismaClient; headers: Headers; axios: AxiosInstance; graphql: GraphQLClient };
 
 /**
  * 2. INITIALIZATION

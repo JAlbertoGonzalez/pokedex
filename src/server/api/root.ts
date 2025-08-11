@@ -1,4 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+import { languageRouter } from "./routers/language";
 import { pokemonRouter } from "./routers/pokemon";
 
 /**
@@ -7,8 +8,9 @@ import { pokemonRouter } from "./routers/pokemon";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  pokemon: pokemonRouter
-});
+  pokemon: pokemonRouter,
+  language: languageRouter
+  });
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

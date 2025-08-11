@@ -1,4 +1,4 @@
-import { request, gql } from "graphql-request";
+import { gql, request } from "graphql-request";
 import { z } from "zod";
 
 const ENDPOINT = "https://graphql.pokeapi.co/v1beta2";
