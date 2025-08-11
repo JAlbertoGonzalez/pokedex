@@ -1,19 +1,8 @@
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import axios from "axios";
 import { z } from "zod";
 
 export const pokemonRouter = createTRPCRouter({
-
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .output(z.object({ greeting: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hola mundo desde ${input.text}`,
-      };
-    }),
-
 
     getAllInfinite: publicProcedure
       .input(z.object({
@@ -41,7 +30,7 @@ export const pokemonRouter = createTRPCRouter({
         };
 
         // Obtener la lista de pokémons desde la PokéAPI
-        const { data } = await ctx.axios.get<PokeApiListResponse>("https://pokeapi.co/api/v2/pokemon");
+        const { data } = await ctx.axios.get<PokeApiListResponse>(`https://pokeapi.co/api/v2/pokemon?offset=0&limit=10000`);
         let pokemons = data.results.map((poke, idx) => ({ id: idx + 1, name: poke.name }));
 
         // Filtrar por búsqueda si aplica
@@ -52,7 +41,9 @@ export const pokemonRouter = createTRPCRouter({
   // Paginación
   const start = cursor ?? 0;
   const paginated = pokemons.slice(start, start + take);
-  const nextCursor = start + take < pokemons.length ? start + take : undefined;
+  const lastCursor = cursor ?? 0
+  const offset = lastCursor + take
+  const nextCursor = offset
 
   return outputSchema.parse({ pokemons: paginated, nextCursor });
       }),

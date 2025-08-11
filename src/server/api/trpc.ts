@@ -33,6 +33,7 @@ const axios = setupCache(instance, {
     async find(key, _currentRequest) {
       const cacheFile = `${CACHE_DIR}/${key}.json`;
       if (!fs.existsSync(cacheFile)) {
+        console.log('MISSING', _currentRequest)
         return undefined;
       }
       const result = fs.readFileSync(cacheFile, 'utf-8');
@@ -42,10 +43,11 @@ const axios = setupCache(instance, {
       const cacheFile = `${CACHE_DIR}/${key}.json`;
       fs.writeFileSync(cacheFile, JSON.stringify(value));
     },
-    async remove(key) {
+    async remove(_key) {
       // Won't remove cache
       // fs.unlinkSync(`${CACHE_DIR}/${key}.json`);
-    }
+    },
+
   })
 })
 

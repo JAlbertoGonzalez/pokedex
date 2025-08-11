@@ -1,27 +1,24 @@
 "use client";
+
+// Tipos para la paginación de pokémon
+type Pokemon = { id: number; name: string };
+type PokemonPage = { pokemons: Pokemon[]; nextCursor?: number };
 import { api } from "@/trpc/react";
-import { SidebarElement } from "./SidebarElement";
 import Link from "next/link";
 import { useRef } from "react";
+import { SidebarElement } from "./SidebarElement";
 
 export function Sidebar() {
-  // Infinite scroll con useInfiniteQuery
-  const take = 30;
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = api.pokemon.getAllInfinite.useInfiniteQuery(
+
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
+    {},
     {
-      take,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      getNextPageParam: (lastPage: PokemonPage) => lastPage.nextCursor,
     }
   );
+
+  // Infinite scroll con useInfiniteQuery
+
 
   // Referencia al contenedor para detectar scroll
   const listRef = useRef<HTMLDivElement>(null);
@@ -62,13 +59,23 @@ export function Sidebar() {
           onScroll={handleScroll}
         >
           <div className="grid grid-cols-1 gap-2 w-full">
-            {data?.pages.flatMap((page) => page.pokemons).map((pokemon) => (
+            {data?.pages.flatMap((page: PokemonPage) => page.pokemons).map((pokemon: Pokemon) => (
               <SidebarElement key={pokemon.id} id={pokemon.id} name={pokemon.name} />
             ))}
           </div>
           {isFetchingNextPage && hasNextPage && (
             <div className="flex justify-center items-center py-4">
               <span className="animate-spin rounded-full h-6 w-6 border-4 border-yellow-400 border-t-transparent"></span>
+            </div>
+          )}
+          { !isFetchingNextPage && hasNextPage && (
+            <div className="flex justify-center items-center py-4">
+              <button
+                className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition border border-purple-400"
+                onClick={() => fetchNextPage()}
+              >
+                Cargar más
+              </button>
             </div>
           )}
         </div>

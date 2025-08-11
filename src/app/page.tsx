@@ -2,7 +2,6 @@
 import { api, HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
-  const hello = await api.pokemon.hello({ text: "from tRPC" });
 
   // void api.post.getLatest.prefetch();
 
@@ -13,7 +12,6 @@ export default async function Home() {
           Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
         </h1>
         <div className="flex flex-col items-center gap-2">
-          {hello.greeting}
           <p>Hola Mundo desde el front!</p>
         </div>
       </div>
