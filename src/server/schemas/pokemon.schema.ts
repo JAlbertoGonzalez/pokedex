@@ -23,105 +23,42 @@ export const pokemonOutputSchema = z.object({
   is_default: z.boolean(),
   location_area_encounters: z.string(),
   moves: z.array(
-    z.union([
-      z.object({
-        move: z.object({ name: z.string(), url: z.string() }),
-        version_group_details: z.array(
-          z.object({
-            level_learned_at: z.number(),
-            move_learn_method: z.object({ name: z.string(), url: z.string() }),
-            order: z.null(),
-            version_group: z.object({ name: z.string(), url: z.string() })
-          })
-        )
-      }),
-      z.object({
-        move: z.object({ name: z.string(), url: z.string() }),
-        version_group_details: z.array(
-          z.union([
-            z.object({
-              level_learned_at: z.number(),
-              move_learn_method: z.object({
-                name: z.string(),
-                url: z.string()
-              }),
-              order: z.number(),
-              version_group: z.object({ name: z.string(), url: z.string() })
-            }),
-            z.object({
-              level_learned_at: z.number(),
-              move_learn_method: z.object({
-                name: z.string(),
-                url: z.string()
-              }),
-              order: z.null(),
-              version_group: z.object({ name: z.string(), url: z.string() })
-            })
-          ])
-        )
-      }),
-      z.object({
-        move: z.object({ name: z.string(), url: z.string() }),
-        version_group_details: z.array(
-          z.union([
-            z.object({
-              level_learned_at: z.number(),
-              move_learn_method: z.object({
-                name: z.string(),
-                url: z.string()
-              }),
-              order: z.null(),
-              version_group: z.object({ name: z.string(), url: z.string() })
-            }),
-            z.object({
-              level_learned_at: z.number(),
-              move_learn_method: z.object({
-                name: z.string(),
-                url: z.string()
-              }),
-              order: z.number(),
-              version_group: z.object({ name: z.string(), url: z.string() })
-            })
-          ])
-        )
-      })
-    ])
+    z.object({
+      move: z.object({ name: z.string(), url: z.string() }),
+      version_group_details: z.array(
+        z.object({
+          level_learned_at: z.number(),
+          move_learn_method: z.object({ name: z.string(), url: z.string() }),
+          order: z.union([z.number(), z.string(), z.null()]),
+          version_group: z.object({ name: z.string(), url: z.string() })
+        })
+      )
+    })
   ),
   name: z.string(),
   order: z.number(),
-  past_abilities: z.array(
-    z.object({
-      abilities: z.array(
-        z.object({
-          ability: z.null(),
-          is_hidden: z.boolean(),
-          slot: z.number()
-        })
-      ),
-      generation: z.object({ name: z.string(), url: z.string() })
-    })
-  ),
+  past_abilities: z.array(z.unknown()),
   past_types: z.array(z.unknown()),
   species: z.object({ name: z.string(), url: z.string() }),
   sprites: z.object({
     back_default: z.string(),
-    back_female: z.null(),
+    back_female: z.union([z.string(), z.null()]),
     back_shiny: z.string(),
-    back_shiny_female: z.null(),
+    back_shiny_female: z.union([z.string(), z.null()]),
     front_default: z.string(),
-    front_female: z.null(),
+    front_female: z.union([z.string(), z.null()]),
     front_shiny: z.string(),
-    front_shiny_female: z.null(),
+    front_shiny_female: z.union([z.string(), z.null()]),
     other: z.object({
       dream_world: z.object({
         front_default: z.string(),
-        front_female: z.null()
+        front_female: z.union([z.string(), z.null()])
       }),
       home: z.object({
         front_default: z.string(),
-        front_female: z.null(),
+        front_female: z.union([z.string(), z.null()]),
         front_shiny: z.string(),
-        front_shiny_female: z.null()
+        front_shiny_female: z.union([z.string(), z.null()])
       }),
       "official-artwork": z.object({
         front_default: z.string(),
@@ -129,13 +66,13 @@ export const pokemonOutputSchema = z.object({
       }),
       showdown: z.object({
         back_default: z.string(),
-        back_female: z.null(),
+        back_female: z.union([z.string(), z.null()]),
         back_shiny: z.string(),
-        back_shiny_female: z.null(),
+        back_shiny_female: z.union([z.string(), z.null()]),
         front_default: z.string(),
-        front_female: z.null(),
+        front_female: z.union([z.string(), z.null()]),
         front_shiny: z.string(),
-        front_shiny_female: z.null()
+        front_shiny_female: z.union([z.string(), z.null()])
       })
     }),
     versions: z.object({
@@ -204,82 +141,82 @@ export const pokemonOutputSchema = z.object({
       "generation-iv": z.object({
         "diamond-pearl": z.object({
           back_default: z.string(),
-          back_female: z.null(),
+          back_female: z.union([z.string(), z.null()]),
           back_shiny: z.string(),
-          back_shiny_female: z.null(),
+          back_shiny_female: z.union([z.string(), z.null()]),
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         }),
         "heartgold-soulsilver": z.object({
           back_default: z.string(),
-          back_female: z.null(),
+          back_female: z.union([z.string(), z.null()]),
           back_shiny: z.string(),
-          back_shiny_female: z.null(),
+          back_shiny_female: z.union([z.string(), z.null()]),
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         }),
         platinum: z.object({
           back_default: z.string(),
-          back_female: z.null(),
+          back_female: z.union([z.string(), z.null()]),
           back_shiny: z.string(),
-          back_shiny_female: z.null(),
+          back_shiny_female: z.union([z.string(), z.null()]),
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         })
       }),
       "generation-v": z.object({
         "black-white": z.object({
           animated: z.object({
             back_default: z.string(),
-            back_female: z.null(),
+            back_female: z.union([z.string(), z.null()]),
             back_shiny: z.string(),
-            back_shiny_female: z.null(),
+            back_shiny_female: z.union([z.string(), z.null()]),
             front_default: z.string(),
-            front_female: z.null(),
+            front_female: z.union([z.string(), z.null()]),
             front_shiny: z.string(),
-            front_shiny_female: z.null()
+            front_shiny_female: z.union([z.string(), z.null()])
           }),
           back_default: z.string(),
-          back_female: z.null(),
+          back_female: z.union([z.string(), z.null()]),
           back_shiny: z.string(),
-          back_shiny_female: z.null(),
+          back_shiny_female: z.union([z.string(), z.null()]),
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         })
       }),
       "generation-vi": z.object({
         "omegaruby-alphasapphire": z.object({
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         }),
         "x-y": z.object({
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         })
       }),
       "generation-vii": z.object({
-        icons: z.object({ front_default: z.string(), front_female: z.null() }),
+        icons: z.object({ front_default: z.string(), front_female: z.union([z.string(), z.null()]) }),
         "ultra-sun-ultra-moon": z.object({
           front_default: z.string(),
-          front_female: z.null(),
+          front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.null()
+          front_shiny_female: z.union([z.string(), z.null()])
         })
       }),
       "generation-viii": z.object({
-        icons: z.object({ front_default: z.string(), front_female: z.null() })
+        icons: z.object({ front_default: z.string(), front_female: z.union([z.string(), z.null()]) })
       })
     })
   }),
@@ -297,4 +234,4 @@ export const pokemonOutputSchema = z.object({
     })
   ),
   weight: z.number()
-})
+});
