@@ -25,10 +25,7 @@ export function Sidebar() {
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
     { search: searchDebounced },
     {
-      getNextPageParam: (lastPage: PokemonPage) => {
-        console.log('lastPage', {lastPage})
-        return lastPage.nextCursor
-      },
+      getNextPageParam: (lastPage: PokemonPage) => lastPage.nextCursor,
     }
   );
 
@@ -49,7 +46,7 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar escritorio */}
-  <aside className="w-96 h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border overflow-x-hidden">
+  <aside className="w-[28rem] h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border overflow-x-hidden">
     <div className="h-full flex flex-col">
       {/* Buscador */}
   <div className="mb-4 rounded-md p-2">
