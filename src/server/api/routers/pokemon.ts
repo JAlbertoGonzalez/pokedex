@@ -41,9 +41,7 @@ export const pokemonRouter = createTRPCRouter({
   // Paginación
   const start = cursor ?? 0;
   const paginated = pokemons.slice(start, start + take);
-  const lastCursor = cursor ?? 0
-  const offset = lastCursor + take
-  const nextCursor = offset
+  const nextCursor = start + take < pokemons.length ? start + take : undefined;
 
   return outputSchema.parse({ pokemons: paginated, nextCursor });
       }),
