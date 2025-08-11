@@ -1,15 +1,16 @@
-import React, { createContext, useContext, useState, type ReactNode } from "react";
+import { api } from "@/trpc/react";
+import React, { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-interface LanguageContextProps {
-  languageId: string;
-  setLanguageId: (id: string) => void;
-}
+type LanguageContextProps = {
+  languageId: number;
+  setLanguageId: (id: number) => void;
+  languageList?: Array<{ id: number; name: string }>;
+};
 
 const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [languageId, setLanguageId] = useState<string>("es");
-
+  const [languageId, setLanguageId] = useState<number>(7);
   return (
     <LanguageContext.Provider value={{ languageId, setLanguageId }}>
       {children}

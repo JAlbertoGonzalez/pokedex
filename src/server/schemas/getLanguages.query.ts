@@ -2,11 +2,11 @@ import { gql } from "graphql-request";
 
 export const getLanguagesQuery = gql`
   query Languages {
-    language {
+    language(where: { id: { _in: [1, 7, 9] } }) {
       id
       name
       languagenames {
-        id
+        local_language_id
         name
       }
     }

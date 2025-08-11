@@ -7,7 +7,7 @@ export type GetLanguagesOutput = {
     id: number;
     name: string;
     languagenames: {
-      id: number;
+      local_language_id: number;
       name: string;
     }[];
   }[];
@@ -21,7 +21,7 @@ export const languageRouter = createTRPCRouter({
         id: z.number(),
         name: z.string(),
         languagenames: z.array(z.object({
-          id: z.number(),
+          local_language_id: z.number(),
           name: z.string(),
         })),
       })),
@@ -33,7 +33,7 @@ export const languageRouter = createTRPCRouter({
           id: z.number(),
           name: z.string(),
           languagenames: z.array(z.object({
-            id: z.number(),
+            local_language_id: z.number(),
             name: z.string(),
           })),
         })),
