@@ -198,41 +198,7 @@ export function Sidebar() {
           )}
         </div>
       </div>
-      {/* Listado de Pokémon */}
-  <div className="rounded-md p-2 flex-1 min-h-0 flex flex-col">
-        <h2 className="text-purple-400 font-bold mb-2">Pokémons</h2>
-        {isLoading && <div className="text-gray-400">Cargando...</div>}
-        {error && <div className="text-red-400">Error al cargar</div>}
-        <div
-          className="overflow-y-auto overflow-x-hidden flex-1 min-h-0 scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-[#23214a]"
-          ref={listRef}
-          onScroll={handleScroll}
-        >
-          <div className="grid grid-cols-1 gap-2 w-full">
-            {data?.pages.flatMap((page: PokemonPage) => page.pokemon).map((pokemon: PokemonGraphQL) => (
-              <SidebarElement
-                key={pokemon.id}
-                pokemonData={pokemon}
-              />
-            ))}
-          </div>
-          {isFetchingNextPage && hasNextPage && (
-            <div className="flex justify-center items-center py-4">
-              <span className="animate-spin rounded-full h-6 w-6 border-4 border-yellow-400 border-t-transparent"></span>
-            </div>
-          )}
-          { !isFetchingNextPage && hasNextPage && (
-            <div className="flex justify-center items-center py-4">
-              <button
-                className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition border border-purple-400"
-                onClick={() => fetchNextPage()}
-              >
-                Cargar más
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+  {/* ...el resto del sidebar permanece igual, sólo filtros y controles... */}
     </div>
       </aside>
       {/* Sidebar móvil */}
