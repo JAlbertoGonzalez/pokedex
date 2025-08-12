@@ -91,10 +91,11 @@ const PokedexBase = gql/* GraphQL */`
         is_default: { _eq: true }
         pokemonspecy: {
           generation_id: { _in: $generationIds }
-          pokemonspeciesnames: {
-            language: { name: { _eq: $lang } }
-            name: { _iregex: $nameRegex }
-          }
+          _or: [
+            { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } },
+            { pokemonspecy: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } },
+            { pokemonspecies: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } }
+          ]
         }
       }
       order_by: { id: asc }
