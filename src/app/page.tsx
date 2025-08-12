@@ -2,10 +2,10 @@
 // import { Sidebar } from "@/app/_components/Sidebar";
 import { api } from "@/trpc/react";
 
-import { useState, useEffect, useRef } from "react";
-import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.types";
 import { PokemonList } from "@/app/_components/PokemonList";
 import { Sidebar } from "@/app/_components/Sidebar";
+import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.types";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   // Estado de filtros
@@ -19,13 +19,23 @@ export default function Home() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Query de pokémon con filtros
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
+  // Query de pokémon con nuevos parámetros
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
+  const generationIds = generation ? [generation] : [1,2,3,4,5,6,7,8,9];
+  const lang = "es";
+  const mode = typeMode === "and" ? "AND" : "OR";
+  const nameRegex = searchDebounced.length > 0 ? searchDebounced : ".*";
+
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfiniteScroll.useInfiniteQuery(
     {
-      search: searchDebounced,
+      limit,
+      offset,
+      nameRegex,
+      generationIds,
+      lang,
       types: selectedTypes,
-      typeMode,
-      generation,
+      mode,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,

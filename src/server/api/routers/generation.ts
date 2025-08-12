@@ -1,7 +1,7 @@
+import { getGenerationsQuery } from "@/server/schemas/getGenerations.query";
 import { z } from "zod";
 import type { GetGenerationsOutput } from "../../schemas/getGenerations.types";
-import { getGenerationsQuery } from "@/server/schemas/getGenerations.query";
-import { publicProcedure, createTRPCRouter } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const generationRouter = createTRPCRouter({
   getGenerations: publicProcedure

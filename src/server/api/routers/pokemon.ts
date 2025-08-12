@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { getAllInfiniteInputSchema } from "@/server/schemas/getAllInfinite.input";
 import { getAllInfiniteOutputSchema } from "@/server/schemas/getAllInfinite.output";
-import { getAllInfiniteQuery } from "@/server/schemas/getAllInfinite.query";
+import { buildPokedexQuery } from "@/server/schemas/getAllInfinite.query";
 import {
   getAllInfiniteRawSchema,
   type GetAllInfiniteRaw,
@@ -12,45 +12,42 @@ import { getPokemonQuery } from "@/server/schemas/getPokemon.query";
 import { searchSpeciesBySpanishNameInputSchema } from "@/server/schemas/searchSpeciesBySpanishName.input";
 import { searchSpeciesBySpanishNameOutputSchema } from "@/server/schemas/searchSpeciesBySpanishName.output";
 import { searchSpeciesBySpanishNameQuery } from "@/server/schemas/searchSpeciesBySpanishName.query";
+import fs from "fs";
 
 // import { request } from "graphql-request";
 import { z } from "zod";
 
 export const pokemonRouter = createTRPCRouter({
-  getAllInfinite: publicProcedure
+  getAllInfiniteScroll: publicProcedure
     .input(getAllInfiniteInputSchema)
+    .output(getAllInfiniteOutputSchema)
   .query(async ({ input, ctx }) => {
-  const { cursor = 0, take, search, types, language = "es", typeMode = "and", generation } = input;
-      const where: Record<string, unknown> = {};
-      if (search) {
-        where.name = { _regex: search };
-      }
-      if (types && types.length > 0) {
-        if (typeMode === "and") {
-          // Filtro AND: cada tipo debe estar presente
-          where._and = types.map(typeName => ({
-            pokemontypes: {
-              type: { name: { _eq: typeName } }
-            }
-          }));
-        } else {
-          // Filtro OR: al menos uno de los tipos
-          where.pokemontypes = {
-            type: { name: { _in: types } },
-          };
-        }
-      }
-      if (generation !== undefined) {
-        where.generation_id = { _eq: generation };
-      }
-  const variables = { limit: take, offset: cursor, where, language };
-  const rawData = await ctx.graphql.request(getAllInfiniteQuery, variables);
-      const raw: GetAllInfiniteRaw = getAllInfiniteRawSchema.parse(rawData);
-      const nextCursor =
-        raw.pokemon.length === take ? cursor + take : undefined;
-      const data = getAllInfiniteOutputSchema.parse({ ...raw, nextCursor });
-      return data;
-    }),
+    const {
+      limit,
+      offset = 0,
+      nameRegex,
+      generationIds,
+      lang = "es",
+      mode = "AND",
+      types,
+    } = input;
+    const { document, variables } = buildPokedexQuery({
+      limit,
+      offset,
+      nameRegex,
+      generationIds,
+      lang,
+      types,
+      mode,
+    });
+    const rawData = await ctx.graphql.request(document, variables);
+
+
+    const raw = getAllInfiniteOutputSchema.parse(rawData);
+    const nextCursor = raw.pokemon.length === variables.limit ? variables.offset + variables.limit : undefined;
+    const data = getAllInfiniteOutputSchema.parse({ ...raw, nextCursor });
+    return data;
+  }),
 
   getPokemon: publicProcedure
     .input(getPokemonInputSchema)

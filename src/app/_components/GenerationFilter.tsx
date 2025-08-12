@@ -1,6 +1,6 @@
-import React from "react";
+import type { Generation, GetGenerationsOutput } from "@/server/schemas/getGenerations.types";
 import { api } from "@/trpc/react";
-import type { GetGenerationsOutput, Generation } from "@/server/schemas/getGenerations.types";
+import React from "react";
 
 
 interface GenerationFilterProps {

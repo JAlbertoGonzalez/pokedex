@@ -7,13 +7,13 @@ import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.type
 import { api } from "@/trpc/react";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 import Select from "react-select";
+import { GenerationFilter } from "./GenerationFilter";
 import { LanguageDropdown } from "./LanguageDropdown";
 import { useLanguage } from "./LanguageProvider";
 import { SidebarElement } from "./SidebarElement";
-import { GenerationFilter } from "./GenerationFilter";
 type PokemonPage = { pokemon: PokemonGraphQL[]; nextCursor?: number };
 type TypeOption = { value: string; label: string };
 
@@ -64,14 +64,21 @@ export function Sidebar({
     { value: "fairy", label: "Hada" },
   ];
 
+  const handleReset = () => {
+    setSearch("");
+    setSelectedTypes([]);
+    setTypeMode("and");
+    setGeneration(undefined);
+  };
+
   return (
     <>
       {/* Sidebar escritorio */}
-  <aside className="w-[28rem] h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border overflow-x-hidden">
-    <div className="h-full flex flex-col">
-  {/* Buscador */}
-  <div className="mb-4 rounded-md p-2 flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible', zIndex: 50 }}>
-        <div className="flex flex-col gap-2">
+      <aside className="w-[28rem] h-screen bg-[#1a1833] p-4 flex-shrink-0 hidden md:block rounded-xl box-border overflow-x-hidden">
+        <div className="h-full flex flex-col">
+          {/* Buscador */}
+          <div className="mb-4 rounded-md p-2 flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible', zIndex: 50 }}>
+            <div className="flex flex-col gap-2">
           {/* Dropdown de idiomas */}
           {/* Dropdown de idiomas como componente aislado */}
           <LanguageDropdown />
@@ -94,7 +101,14 @@ export function Sidebar({
               Búsqueda avanzada
             </span>
           </button>
-        </div>
+              <button
+                type="button"
+                className="h-10 px-4 py-2 rounded bg-purple-700 text-white border border-purple-400 hover:bg-purple-800 transition mt-2"
+                onClick={handleReset}
+              >
+                Reset filtros
+              </button>
+            </div>
         {showOptions && (
           <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
             <GenerationFilter generation={generation} setGeneration={setGeneration} />
