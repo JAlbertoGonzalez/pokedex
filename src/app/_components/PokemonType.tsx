@@ -1,6 +1,6 @@
 "use client";
 
-import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.types";
+
 
 const LANGUAGE = "es";
 
@@ -27,15 +27,23 @@ export const POKEMON_TYPE_COLORS: { type: string; color: string }[] = [
   { type: "fairy", color: "#D685AD" },
 ];
 
-export function PokemonType({ typeData }: { typeData: NonNullable<PokemonGraphQL["pokemontypes"]>[number] }) {
+type TypeData = {
+  type: {
+    name: string;
+    nombre_localizado?: { name: string }[];
+    typenames?: { name: string; language?: { name: string } }[];
+  };
+};
+
+export function PokemonType({ typeData }: { typeData: TypeData }) {
   const typeName = typeData.type.name;
   const color = POKEMON_TYPE_COLORS.find(t => t.type === typeName)?.color;
 
   // Mostrar el primer nombre localizado disponible
   let displayName = typeName;
-  if (Array.isArray(typeData.type.nombre_localizado) && typeData.type.nombre_localizado.length > 0) {
+  if (Array.isArray(typeData.type.nombre_localizado) && typeData.type.nombre_localizado?.[0]?.name) {
     displayName = typeData.type.nombre_localizado[0].name;
-  } else if (Array.isArray(typeData.type.typenames) && typeData.type.typenames.length > 0) {
+  } else if (Array.isArray(typeData.type.typenames) && typeData.type.typenames?.[0]?.name) {
     displayName = typeData.type.typenames[0].name;
   }
 

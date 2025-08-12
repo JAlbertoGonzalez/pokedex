@@ -2,17 +2,12 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { getAllInfiniteInputSchema } from "@/server/schemas/getAllInfinite.input";
 import { getAllInfiniteOutputSchema } from "@/server/schemas/getAllInfinite.output";
 import { buildPokedexQuery } from "@/server/schemas/getAllInfinite.query";
-import {
-  getAllInfiniteRawSchema,
-  type GetAllInfiniteRaw,
-} from "@/server/schemas/getAllInfinite.raw";
 import { getPokemonInputSchema } from "@/server/schemas/getPokemon.input";
 import { getPokemonOutputSchema } from "@/server/schemas/getPokemon.output";
 import { getPokemonQuery } from "@/server/schemas/getPokemon.query";
 import { searchSpeciesBySpanishNameInputSchema } from "@/server/schemas/searchSpeciesBySpanishName.input";
 import { searchSpeciesBySpanishNameOutputSchema } from "@/server/schemas/searchSpeciesBySpanishName.output";
 import { searchSpeciesBySpanishNameQuery } from "@/server/schemas/searchSpeciesBySpanishName.query";
-import fs from "fs";
 
 // import { request } from "graphql-request";
 import { z } from "zod";

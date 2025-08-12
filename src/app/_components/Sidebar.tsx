@@ -38,10 +38,8 @@ export function Sidebar({
   generation,
   setGeneration
 }: SidebarProps) {
-  // Estado para mostrar/ocultar opciones avanzadas
-  const [showOptions, setShowOptions] = useState(false);
+  // La búsqueda avanzada siempre estará visible, no se necesita estado
   // Estado para mostrar/ocultar el JSON raw
-  const [showRaw, setShowRaw] = useState(false);
   // Opciones de tipos de Pokémon
   const typeOptions = [
     { value: "normal", label: "Normal" },
@@ -79,9 +77,6 @@ export function Sidebar({
           {/* Buscador */}
           <div className="mb-4 rounded-md p-2 flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible', zIndex: 50 }}>
             <div className="flex flex-col gap-2">
-          {/* Dropdown de idiomas */}
-          {/* Dropdown de idiomas como componente aislado */}
-          <LanguageDropdown />
           <input
             type="text"
             placeholder="Buscar Pokémon..."
@@ -89,18 +84,7 @@ export function Sidebar({
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <button
-            type="button"
-            className="h-10 p-2 rounded bg-[#23214a] border border-purple-400 hover:bg-purple-700 transition flex items-center justify-center relative"
-            aria-label="Más opciones"
-            title="Búsqueda avanzada"
-            onClick={() => setShowOptions((v) => !v)}
-          >
-            <MoreHorizontal size={22} className={`text-purple-400 transition-transform ${showOptions ? 'rotate-90' : ''}`} />
-            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 rounded bg-[#23214a] text-xs text-purple-300 border border-purple-400 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-[1000] whitespace-nowrap">
-              Búsqueda avanzada
-            </span>
-          </button>
+          {/* Búsqueda avanzada siempre visible */}
               <button
                 type="button"
                 className="h-10 px-4 py-2 rounded bg-purple-700 text-white border border-purple-400 hover:bg-purple-800 transition mt-2"
@@ -109,8 +93,7 @@ export function Sidebar({
                 Reset filtros
               </button>
             </div>
-        {showOptions && (
-          <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
+  <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
             <GenerationFilter generation={generation} setGeneration={setGeneration} />
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-purple-300">Filtrar por tipo:</label>
@@ -170,35 +153,18 @@ export function Sidebar({
               />
             {/* El switch visual ya está incluido arriba, se elimina el select */}
           </div>
-        )}
-        {/* Collapsable JSON raw */}
-        <div className="mt-2">
-          <button
-            type="button"
-            className="text-xs text-purple-300 underline mb-1"
-            onClick={() => setShowRaw((v) => !v)}
-          >
-            {showRaw ? "Ocultar JSON raw" : "Mostrar JSON raw"}
-          </button>
-          {showRaw && (
-            <pre className="bg-[#23214a] text-white text-xs rounded p-2 max-h-64 overflow-auto border border-purple-400 whitespace-pre-wrap">
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          )}
+  </div>
         </div>
-      </div>
-  {/* ...el resto del sidebar permanece igual, sólo filtros y controles... */}
-    </div>
       </aside>
-      {/* Sidebar móvil */}
-      <aside className="w-full bg-[#1a1833] p-2 flex-shrink-0 flex md:hidden justify-between items-center">
-        <span className="font-bold text-lg">Menú</span>
-        <nav className="flex gap-4">
-          <Link href="/" className="hover:text-purple-400 transition">Inicio</Link>
-          <Link href="/pokedex" className="hover:text-purple-400 transition">Pokedex</Link>
-          <Link href="/about" className="hover:text-purple-400 transition">Acerca de</Link>
-        </nav>
-      </aside>
+    {/* Sidebar móvil */}
+    <aside className="w-full bg-[#1a1833] p-2 flex-shrink-0 flex md:hidden justify-between items-center">
+      <span className="font-bold text-lg">Menú</span>
+      <nav className="flex gap-4">
+        <Link href="/" className="hover:text-purple-400 transition">Inicio</Link>
+        <Link href="/pokedex" className="hover:text-purple-400 transition">Pokedex</Link>
+        <Link href="/about" className="hover:text-purple-400 transition">Acerca de</Link>
+      </nav>
+    </aside>
     </>
   );
 }
