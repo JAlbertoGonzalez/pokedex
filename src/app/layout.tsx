@@ -25,7 +25,6 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           <div className="min-h-screen flex bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-            <Sidebar />
             <main className="flex-1 flex flex-col h-screen overflow-y-auto">{children}</main>
           </div>
         </TRPCReactProvider>

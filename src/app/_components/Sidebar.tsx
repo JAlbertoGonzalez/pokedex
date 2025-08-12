@@ -7,7 +7,8 @@ import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.type
 import { api } from "@/trpc/react";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
 import { LanguageDropdown } from "./LanguageDropdown";
 import { useLanguage } from "./LanguageProvider";
@@ -16,59 +17,32 @@ import { GenerationFilter } from "./GenerationFilter";
 type PokemonPage = { pokemon: PokemonGraphQL[]; nextCursor?: number };
 type TypeOption = { value: string; label: string };
 
-export function Sidebar() {
-  // Estado para la generación seleccionada
-  const [generation, setGeneration] = useState<number | undefined>(undefined);
-  // Obtiene las generaciones desde el endpoint
-  const { languageCode } = useLanguage();
-  // Estado para el valor del buscador
-  const [search, setSearch] = useState("");
-  const [searchDebounced, setSearchDebounced] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<TypeOption[]>([]);
-  // Estado para mostrar/ocultar el JSON raw
-  const [showRaw, setShowRaw] = useState(false);
-  // Estado para el modo de filtro de tipos
-  const [typeMode, setTypeMode] = useState<"and" | "or">("and");
+type SidebarProps = {
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
+  selectedTypes: string[];
+  setSelectedTypes: Dispatch<SetStateAction<string[]>>;
+  typeMode: "and" | "or";
+  setTypeMode: Dispatch<SetStateAction<"and" | "or">>;
+  generation?: number;
+  setGeneration: Dispatch<SetStateAction<number | undefined>>;
+};
 
-  // Actualiza searchDebounced solo cuando el usuario deja de escribir por 400ms
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchDebounced(search);
-    }, 400);
-    return () => clearTimeout(handler);
-  }, [search]);
-
-  // Obtener los valores de los tipos seleccionados
-  const selectedTypeValues = selectedTypes.map((t) => t.value);
-
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfinite.useInfiniteQuery(
-    { search: searchDebounced, types: selectedTypeValues, language: languageCode, typeMode, generation },
-    {
-      getNextPageParam: (lastPage: PokemonPage) => {
-        console.log('lastPage', {lastPage})
-        return lastPage.nextCursor
-      },
-    }
-  );
-
-  // Referencia al contenedor para detectar scroll
-  const listRef = useRef<HTMLDivElement>(null);
-
+export function Sidebar({
+  search,
+  setSearch,
+  selectedTypes,
+  setSelectedTypes,
+  typeMode,
+  setTypeMode,
+  generation,
+  setGeneration
+}: SidebarProps) {
   // Estado para mostrar/ocultar opciones avanzadas
   const [showOptions, setShowOptions] = useState(false);
-
-  // Detectar scroll al final y cargar más
-  const handleScroll = () => {
-    const el = listRef.current;
-    if (!el || isFetchingNextPage || !hasNextPage) return;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-      if (hasNextPage) {
-        void fetchNextPage();
-      }
-    }
-  };
-
-  // Opciones de tipos de Pokémon (puedes ampliar la lista)
+  // Estado para mostrar/ocultar el JSON raw
+  const [showRaw, setShowRaw] = useState(false);
+  // Opciones de tipos de Pokémon
   const typeOptions = [
     { value: "normal", label: "Normal" },
     { value: "fire", label: "Fuego" },
@@ -136,49 +110,50 @@ export function Sidebar() {
                 {typeMode === "and" ? "AND" : "OR"}
               </button>
             </div>
-            <Select
-              isMulti
-              options={typeOptions}
-              value={selectedTypes}
-              onChange={selected => {
-                if ((selected as TypeOption[]).length <= 2) setSelectedTypes(selected as TypeOption[]);
-              }}
-              classNamePrefix="react-select"
-              placeholder="Selecciona tipos..."
-              styles={{
-                control: (base) => ({ ...base, backgroundColor: '#18163a', borderColor: '#a78bfa', color: '#fff' }),
-                menu: (base) => ({ ...base, backgroundColor: '#23214a', color: '#fff' }),
-                multiValue: (base, { data }) => {
-                  const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#a78bfa';
-                  return { ...base, backgroundColor: color, color: '#23214a', borderRadius: '999px', padding: '2px 8px', margin: '4px', display: 'inline-flex', alignItems: 'center', width: 'auto', minWidth: '0', maxWidth: '100%' };
-                },
-                multiValueLabel: (base, { data }) => {
-                  const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#23214a';
-                  return { ...base, color: '#23214a', fontWeight: 'bold', backgroundColor: color };
-                },
-                multiValueRemove: (base, { data }) => {
-                  const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#c4b5fd';
-                  return { ...base, color: '#23214a', backgroundColor: color, borderRadius: '999px', ':hover': { backgroundColor: color, color: '#23214a' } };
-                },
-                option: (base, state) => {
-                  const color = POKEMON_TYPE_COLORS.find(t => t.type === state.data.value)?.color ?? '#23214a';
-                  return {
-                    ...base,
-                    backgroundColor: color,
-                    color: '#fff',
-                    fontWeight: state.isSelected ? 'bold' : 'normal',
-                    borderRadius: '999px',
-                    padding: '6px 16px',
-                    margin: '4px',
-                    boxShadow: state.isFocused ? '0 0 0 2px #a78bfa' : undefined,
-                    display: 'inline-block',
-                    width: 'auto',
-                    minWidth: '0',
-                    maxWidth: '100%',
-                  };
-                },
-              }}
-            />
+              <Select
+                isMulti
+                options={typeOptions}
+                value={selectedTypes.map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1) }))}
+                onChange={selected => {
+                  const values = Array.isArray(selected) ? selected.map((t: any) => t.value) : [];
+                  if (values.length <= 2) setSelectedTypes(values);
+                }}
+                classNamePrefix="react-select"
+                placeholder="Selecciona tipos..."
+                styles={{
+                  control: (base) => ({ ...base, backgroundColor: '#18163a', borderColor: '#a78bfa', color: '#fff' }),
+                  menu: (base) => ({ ...base, backgroundColor: '#23214a', color: '#fff' }),
+                  multiValue: (base, { data }) => {
+                    const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#a78bfa';
+                    return { ...base, backgroundColor: color, color: '#23214a', borderRadius: '999px', padding: '2px 8px', margin: '4px', display: 'inline-flex', alignItems: 'center', width: 'auto', minWidth: '0', maxWidth: '100%' };
+                  },
+                  multiValueLabel: (base, { data }) => {
+                    const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#23214a';
+                    return { ...base, color: '#23214a', fontWeight: 'bold', backgroundColor: color };
+                  },
+                  multiValueRemove: (base, { data }) => {
+                    const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#c4b5fd';
+                    return { ...base, color: '#23214a', backgroundColor: color, borderRadius: '999px', ':hover': { backgroundColor: color, color: '#23214a' } };
+                  },
+                  option: (base, state) => {
+                    const color = POKEMON_TYPE_COLORS.find(t => t.type === state.data.value)?.color ?? '#23214a';
+                    return {
+                      ...base,
+                      backgroundColor: color,
+                      color: '#fff',
+                      fontWeight: state.isSelected ? 'bold' : 'normal',
+                      borderRadius: '999px',
+                      padding: '6px 16px',
+                      margin: '4px',
+                      boxShadow: state.isFocused ? '0 0 0 2px #a78bfa' : undefined,
+                      display: 'inline-block',
+                      width: 'auto',
+                      minWidth: '0',
+                      maxWidth: '100%',
+                    };
+                  },
+                }}
+              />
             {/* El switch visual ya está incluido arriba, se elimina el select */}
           </div>
         )}
