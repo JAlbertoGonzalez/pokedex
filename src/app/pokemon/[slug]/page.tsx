@@ -3,15 +3,14 @@ import { PokemonDetails } from "@/app/_components/PokemonDetails";
 import type { getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { type z } from "zod";
 
 type Pokemon = z.infer<typeof getPokemonBySlugOutput>['pokemon'][0];
 
-export default function PokemonSlugPage({ params }: { params: { slug: string } }) {
+export default function PokemonSlugPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
-
-  // Si el slug es numérico, lo usamos como id
-  const { slug } = params;
+  const { slug } = React.use(params);
   const { data, isLoading, error } = api.pokemon.getPokemonBySlug.useQuery({ slug });
 
   if (isLoading) {

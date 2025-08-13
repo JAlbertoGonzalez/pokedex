@@ -63,7 +63,7 @@ export default function Home() {
     <div className="flex">
       <Sidebar />
       <div className="container flex flex-col gap-6 px-4 py-4 w-full">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] py-8">
+        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[3rem] py-8">
           <span className="text-[hsl(280,100%,70%)]">T3</span> App: Pokédex
         </h1>
         <div className="w-full flex-1 flex flex-col" style={{ overflow: "hidden" }}>

@@ -1,7 +1,7 @@
 "use client";
 import { POKEMON_TYPE_COLORS } from "@/app/_components/PokemonType";
 import { useContext } from "react";
-import Select from "react-select";
+import dynamic from "next/dynamic";
 import { FilterContext } from "./FilterContext";
 
 
@@ -26,6 +26,8 @@ const typeOptions = [
   { value: "fairy", label: "Hada" },
 ];
 
+const SafeSelect = dynamic(() => import("react-select"), { ssr: false });
+
 export function TypeFilter() {
   const { selectedTypes, setSelectedTypes, typeMode, setTypeMode } = useContext(FilterContext);
   return (
@@ -42,10 +44,10 @@ export function TypeFilter() {
           {typeMode === "and" ? "AND" : "OR"}
         </button>
       </div>
-      <Select
-        isMulti
+      <SafeSelect
+        isMulti={true}
         options={typeOptions}
-        value={selectedTypes.map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1) }))}
+        value={selectedTypes.map(t => typeOptions.find(o => o.value === t)).filter(Boolean)}
         onChange={selected => {
           const values = Array.isArray(selected) ? selected.map((t) => t.value) : [];
           if (values.length <= 2) setSelectedTypes(values);
