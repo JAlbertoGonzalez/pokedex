@@ -1,114 +1,43 @@
 
-import React, { useState } from "react";
-import Image from "next/image";
-import { PokemonType } from "@/app/_components/PokemonType";
 
-// El tipo debe ser igual al que usas en el resto del front
-export type PokemonReal = {
-  id: number;
-  name: string;
-  height?: number | null;
-  weight?: number | null;
-  sprites?: {
-    sprites?: {
-      front_default?: string | null;
-      other?: {
-        [key: string]: any;
-        ["official-artwork"]?: {
-          front_default?: string | null;
-        };
-      };
-    };
-  }[];
-  pokemontypes?: { slot?: number; type: { name: string; nombre_localizado?: { name: string }[]; typenames?: { name: string; language?: { name: string } }[] } }[];
-  especie?: {
-    id?: number;
-    name?: string;
-    nombre_localizado?: { name: string }[];
-    entradas_localizadas?: { flavor_text: string; version: { name: string; versionnames: { name: string }[] } }[];
-    generation?: { id: number; name?: string; generationnames?: { name: string }[] };
-    anterior?: { id: number; name: string; pokemonspeciesnames: { name: string }[] } | null;
-    siguientes?: { id: number; name: string; pokemonspeciesnames: { name: string }[] }[];
-  };
-  pokemonstats?: {
-    base_stat: number;
-    effort?: number;
-    stat: {
-      name: string;
-      nombre_localizado: { name: string }[];
-    };
-  }[];
-  stats_normalized?: {
-    values: {
-      hp: number;
-      attack: number;
-      defense: number;
-      special_attack: number;
-      special_defense: number;
-      speed: number;
-    };
-    labels: {
-      hp: string;
-      attack: string;
-      defense: string;
-      special_attack: string;
-      special_defense: string;
-      speed: string;
-    };
-  };
-};
+import { PokemonType } from "@/app/_components/PokemonType";
+import { extractSpriteUrls } from "@/app/_components/utils/extractSpriteUrls";
+import { toRoman } from "@/app/_components/utils/toRoman";
+import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
+import { normalizePokemonStats } from "@/server/schemas/getAllInfinite.output";
+import Image from "next/image";
+import React, { useState } from "react";
+
+
 
 interface Props {
-  pokemon: PokemonReal;
+  pokemon: Pokemon;
 }
 
-// Utilidad para convertir números a romanos
-function toRoman(num: number): string {
-  const romanNumerals = [
-    "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
-  ];
-  return romanNumerals[num] || num.toString();
-}
 
-// Función recursiva para extraer todas las URLs de sprites
-function extractSpriteUrls(obj: any, prefix: string = ""): { label: string; url: string }[] {
-  let result: { label: string; url: string }[] = [];
-  if (!obj || typeof obj !== "object") return result;
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === "string" && value.startsWith("http")) {
-      // Construir el path y mostrar solo los dos últimos elementos separados por '/'
-      const fullPath = (prefix ? prefix + "/" : "") + key.replace(/_/g, " ");
-      const parts = fullPath.split("/").map(s => s.trim()).filter(Boolean);
-      const shortLabel = parts.slice(-2).join("/");
-      result.push({ label: shortLabel, url: value });
-    } else if (typeof value === "object" && value !== null) {
-      result = result.concat(extractSpriteUrls(value, (prefix ? prefix + "/" : "") + key.replace(/_/g, " ")));
-    }
-  }
-  return result;
-}
+
+
 
 export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
+  const stats_normalized = normalizePokemonStats(pokemon.pokemonstats);
   const [activeTab, setActiveTab] = useState(0);
   const [selectedSprite, setSelectedSprite] = useState<string>("");
   const [spriteList, setSpriteList] = useState<{ label: string; url: string }[]>([]);
 
   React.useEffect(() => {
-    // Extraer todas las URLs de sprites recursivamente
     const spriteObj = pokemon.sprites?.[0]?.sprites;
     const sprites = extractSpriteUrls(spriteObj);
     setSpriteList(sprites);
-    // Usar getArtwork como valor por defecto si existe en la lista
     const artworkUrl = getArtwork(pokemon);
     const artworkSprite = sprites.find(s => s.url === artworkUrl);
     setSelectedSprite(artworkSprite?.url ?? sprites[0]?.url ?? "");
   }, [pokemon]);
 
   // helpers para acceder a sprite, artwork y nombre
-  const getSprite = (poke: PokemonReal) => poke.sprites?.[0]?.sprites?.front_default ?? null;
-  const getArtwork = (poke: PokemonReal) => poke.sprites?.[0]?.sprites?.other?.["official-artwork"]?.front_default ?? null;
-  const getName = (poke: PokemonReal) => poke.especie?.nombre_localizado?.[0]?.name ?? poke.name;
-  const getGeneration = (poke: PokemonReal) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
+  const getSprite = (poke: Pokemon) => poke.sprites?.[0]?.sprites?.front_default ?? null;
+  const getArtwork = (poke: Pokemon) => poke.sprites?.[0]?.sprites?.other?.["official-artwork"]?.front_default ?? null;
+  const getName = (poke: Pokemon) => poke.especie?.nombre_localizado?.[0]?.name ?? poke.name;
+  const getGeneration = (poke: Pokemon) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
 
   return (
     <div style={{ background: "#23214a", padding: "32px", borderRadius: "16px", color: "#fff", position: "relative", boxShadow: "0 2px 16px rgba(0,0,0,0.3)", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
@@ -117,11 +46,11 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <Image
               src={selectedSprite}
-              alt={getName(pokemon)}
               width={256}
               height={256}
               style={{ display: "block", background: "#fff", borderRadius: 16 }}
               unoptimized
+              alt="Pokemon Sprite"
             />
             {/* Dropdown de sprites */}
             {spriteList.length > 0 && (
@@ -153,8 +82,7 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
               </h2>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 24, marginTop: 16, alignItems: "flex-start" }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ marginBottom: 8 }}><strong>Altura:</strong> {pokemon.height !== undefined ? (pokemon.height / 10).toFixed(2) + " m" : "-"}</div>
-                  <div style={{ marginBottom: 8 }}><strong>Peso:</strong> {pokemon.weight !== undefined ? (pokemon.weight / 10).toFixed(1) + " kg" : "-"}</div>
+                  <div style={{ marginBottom: 8 }}><strong>Peso:</strong> {pokemon.weight != null ? (pokemon.weight / 10).toFixed(1) + " kg" : "-"}</div>
                   <div style={{ marginBottom: 8 }}>
                     <strong>Primera aparición:</strong> {getGeneration(pokemon)}
                     {pokemon.especie?.generation?.generationnames?.[0]?.name && (
@@ -170,31 +98,22 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
                     ))}
                   </div>
                 </div>
-                {(pokemon.stats_normalized || pokemon.pokemonstats) && (
-                  <div style={{ minWidth: 180, marginLeft: "auto", textAlign: "right" }}>
-                    <strong>Estadísticas base:</strong>
-                    <table style={{ width: "100%", marginTop: 4, background: "#18173a", borderRadius: 8 }}>
-                      <tbody>
-                        {pokemon.stats_normalized
-                          ? Object.entries(pokemon.stats_normalized.labels).map(([key, label]) => (
-                              <tr key={key}>
-                                <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{(() => {
-                                  const parts = String(label).split("/").map(s => s.trim()).filter(Boolean);
-                                  return parts.slice(-2).join("/");
-                                })()}</td>
-                                <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{pokemon.stats_normalized.values[key as keyof typeof pokemon.stats_normalized.values]}</td>
-                              </tr>
-                            ))
-                          : pokemon.pokemonstats?.map((stat, idx) => (
-                              <tr key={idx}>
-                                <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{stat.stat.nombre_localizado?.[0]?.name ?? stat.stat.name}</td>
-                                <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{stat.base_stat}</td>
-                              </tr>
-                            ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                <div style={{ minWidth: 180, marginLeft: "auto", textAlign: "right" }}>
+                  <strong>Estadísticas base:</strong>
+                  <table style={{ width: "100%", marginTop: 4, background: "#18173a", borderRadius: 8 }}>
+                    <tbody>
+                      {Object.entries(stats_normalized.labels).map(([key, label]) => (
+                        <tr key={key}>
+                          <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{(() => {
+                            const parts = String(label).split("/").map(s => s.trim()).filter(Boolean);
+                            return parts.slice(-2).join("/");
+                          })()}</td>
+                          <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{stats_normalized.values[key as keyof typeof stats_normalized.values]}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -270,12 +189,12 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
                   </td>
                   {/* Pokémon actual */}
                   <td style={{ textAlign: "center" }}>
-                    <span style={{ background: "#23214a", borderRadius: 8, padding: "4px 12px", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ background: "#23214a", borderRadius: 8, padding: "8px 16px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                       {getSprite(pokemon) ? (
-                        <Image src={getSprite(pokemon)!} alt={getName(pokemon)} width={32} height={32} style={{ background: "#fff", borderRadius: 8 }} unoptimized />
+                        <Image src={getSprite(pokemon)!} alt={getName(pokemon)} width={64} height={64} style={{ background: "#fff", borderRadius: 8 }} unoptimized />
                       ) : null}
-                      {getName(pokemon)}
-                    </span>
+                      <span style={{ marginTop: 4, fontSize: "1rem", color: "#fff" }}>{getName(pokemon)}</span>
+                    </div>
                   </td>
                   {/* Evoluciones siguientes */}
                   <td style={{ textAlign: "center" }}>
@@ -316,3 +235,4 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
     </div>
   );
 };
+

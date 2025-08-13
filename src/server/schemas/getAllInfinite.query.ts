@@ -17,6 +17,8 @@ export const PokemonPayload = gql/* GraphQL */`
     sprites: pokemonsprites(limit: 1) {
       sprites
     }
+
+    # Tipos con nombre localizado
     pokemontypes(order_by: { slot: asc }) {
       slot
       type {
@@ -26,7 +28,9 @@ export const PokemonPayload = gql/* GraphQL */`
           limit: 1
         ) { name }
       }
-    } 
+    }
+
+    # Stats con nombre localizado
     pokemonstats {
       base_stat
       effort
@@ -38,13 +42,19 @@ export const PokemonPayload = gql/* GraphQL */`
         ) { name }
       }
     }
+
+    # Especie y metadatos
     especie: pokemonspecy {
       id
       name
+
+      # Nombre localizado de la especie
       nombre_localizado: pokemonspeciesnames(
         where: { language: { name: { _eq: $lang } } }
         limit: 1
       ) { name }
+
+      # Entradas de Pokédex localizadas (ordenadas por versión desc)
       entradas_localizadas: pokemonspeciesflavortexts(
         where: { language: { name: { _eq: $lang } } }
         order_by: { version_id: desc }
@@ -58,6 +68,8 @@ export const PokemonPayload = gql/* GraphQL */`
           ) { name }
         }
       }
+
+      # Generación con nombre localizado
       generation {
         id
         name
@@ -66,6 +78,28 @@ export const PokemonPayload = gql/* GraphQL */`
           limit: 1
         ) { name }
       }
+
+      # Cadena de evolución completa (todas las especies) + sprite del Pokémon por defecto de cada especie
+      cadena: evolutionchain {
+        pokemonspecies {
+          id
+          name
+          pokemonspeciesnames(
+            where: { language: { name: { _eq: $lang } } }
+            limit: 1
+          ) { name }
+          pokemon_default: pokemons(
+            where: { is_default: { _eq: true } }
+            limit: 1
+          ) {
+            id
+            name
+            sprites: pokemonsprites(limit: 1) { sprites }
+          }
+        }
+      }
+
+      # Evolución previa (si existe) + sprite del Pokémon por defecto
       anterior: pokemonspecy {
         id
         name
@@ -73,7 +107,17 @@ export const PokemonPayload = gql/* GraphQL */`
           where: { language: { name: { _eq: $lang } } }
           limit: 1
         ) { name }
+        pokemon_default: pokemons(
+          where: { is_default: { _eq: true } }
+          limit: 1
+        ) {
+          id
+          name
+          sprites: pokemonsprites(limit: 1) { sprites }
+        }
       }
+
+      # Evoluciones siguientes (ramificadas) + sprite del Pokémon por defecto
       siguientes: pokemonspecies {
         id
         name
@@ -81,10 +125,20 @@ export const PokemonPayload = gql/* GraphQL */`
           where: { language: { name: { _eq: $lang } } }
           limit: 1
         ) { name }
+        pokemon_default: pokemons(
+          where: { is_default: { _eq: true } }
+          limit: 1
+        ) {
+          id
+          name
+          sprites: pokemonsprites(limit: 1) { sprites }
+        }
       }
     }
   }
 `;
+
+
 
 // =============================
 // Query 1: sin filtro de tipos
