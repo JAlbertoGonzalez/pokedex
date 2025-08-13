@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -17,6 +17,8 @@ import type { PrismaClient } from "@prisma/client";
 import { buildStorage, setupCache, type StorageValue } from "axios-cache-interceptor";
 import fs from 'fs';
 import { GraphQLClient } from "graphql-request";
+import { headers } from "next/headers";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 
 /**
  * Axios Cache Interceptor
@@ -133,7 +135,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
   if (t._config.isDev) {
     // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100;
+    const waitMs = Math.floor(Math.random() * 400) + 2000;
     await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 
@@ -145,6 +147,39 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+
+/**
+ * Rate limiter middleware
+ * This middleware limits the number of requests a user can make to the API.
+ * Will protect us from abuse, and protect us from third-party API abuse.
+ */
+const limiter = new RateLimiterMemory({
+  points: 50,       // máx 50 peticiones
+  duration: 60,     // por 60 segundos
+  blockDuration: 30 // opcional: 30s bloque tras agotar puntos
+});
+
+export const rateLimiter = t.middleware(async ({ ctx, path, next }) => {
+  const h = ctx.headers; 
+
+  const fwdFor = h.get("x-vercel-forwarded-for") ?? h.get("x-forwarded-for");
+  const ip =
+    (fwdFor ? fwdFor.split(",")[0]?.trim() : undefined) ??
+    h.get("x-real-ip") ??
+    "unknown";
+
+  const key = `${path}:ip:${ip}`;
+
+  try {
+    await limiter.consume(key, 1);
+  } catch {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+  }
+
+  return next();
+});
+
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -152,4 +187,6 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure
+.use(rateLimiter) 
+.use(timingMiddleware);

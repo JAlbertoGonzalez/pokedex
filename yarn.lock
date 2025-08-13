@@ -3150,6 +3150,11 @@ queue-microtask@^1.2.2:
   resolved "https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
+rate-limiter-flexible@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-7.2.0.tgz#34e4f6df1f81b086346dac5ad49255897e7e29ca"
+  integrity sha512-hrf0vIS/WOBegnHg+uPXxsXhuQYlNGfZiCmK5Wgudb12xlZUhpv9yD23yp/EW6BKQosshqnIQRQV+r3jyfIGQg==
+
 rc9@^2.1.2:
   version "2.1.2"
   resolved "https://registry.npmjs.org/rc9/-/rc9-2.1.2.tgz"
