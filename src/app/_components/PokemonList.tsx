@@ -52,11 +52,11 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ padding: "8px" }}>#</th>
-            <th style={{ padding: "8px" }}>Sprite</th>
-            <th style={{ padding: "8px" }}>Nombre</th>
-            <th style={{ padding: "8px" }}>Tipos</th>
-            <th style={{ padding: "8px" }}>Generación</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>#</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>Sprite</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>Nombre</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>Tipos</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>Generación</th>
           </tr>
         </thead>
         <tbody>
@@ -86,12 +86,12 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
               <td style={{ padding: "8px", color: "#fff" }}>
                 {getName(pokemon)}
               </td>
-              <td style={{ padding: "8px", textAlign: "center" }}>
+              <td style={{ padding: "8px", textAlign: "left" }}>
                 {pokemon.pokemontypes?.map((type: { type: { name: string; nombre_localizado?: { name: string }[] } }) => (
                   <PokemonType key={type.type.name} typeData={type} />
                 ))}
               </td>
-              <td style={{ padding: "8px", color: "#fff", textAlign: "center" }}>
+              <td style={{ padding: "8px", color: "#fff", textAlign: "left" }}>
                 {getGeneration(pokemon)}
               </td>
             </tr>
