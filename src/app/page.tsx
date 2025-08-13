@@ -75,7 +75,7 @@ export default function Home() {
             <div style={{ flex: 1, overflowY: "auto", maxHeight: "70vh" }}>
               <PokemonList
                 pokemons={pokemonList}
-                onLoadMore={() => setOffset(offset + limit)}
+                onLoadMore={data?.pokemon && data.pokemon.length === limit ? () => setOffset(offset + limit) : undefined}
                 isLoadingMore={isLoading && pokemonList.length > 0}
               />
             </div>
