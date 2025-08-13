@@ -15,6 +15,7 @@ export type FilterContextType = {
   setGeneration: Dispatch<SetStateAction<number | undefined>>;
   generationMode: "exact" | "min" | "max";
   setGenerationMode: Dispatch<SetStateAction<"exact" | "min" | "max">>;
+  resetFilters: () => void;
 };
 
 export const FilterContext = createContext<FilterContextType>({
@@ -30,4 +31,5 @@ export const FilterContext = createContext<FilterContextType>({
   setGeneration: () => {},
   generationMode: "exact",
   setGenerationMode: () => {},
+  resetFilters: () => {},
 });

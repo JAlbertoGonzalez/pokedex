@@ -1,17 +1,25 @@
 "use client";
-import { useContext, type Dispatch, type SetStateAction } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FilterContext } from "./FilterContext";
 
-
 export function TextSearch() {
-  const { search, setSearch } = useContext(FilterContext);
+  const { search, setSearch } = useContext(FilterContext)
+  const [localValue, setLocalValue] = useState(search)
+
+  useEffect(() => setLocalValue(search), [search])
+
+  useEffect(() => {
+    const handler = setTimeout(() => setSearch(localValue), 1000);
+    return () => clearTimeout(handler);
+  }, [localValue, setSearch]);
+
   return (
     <input
       type="text"
       placeholder="Buscar Pokémon..."
       className="h-10 w-full px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
-      value={search}
-      onChange={e => setSearch(e.target.value)}
+      value={localValue}
+      onChange={e => setLocalValue(e.target.value)}
     />
   );
 }
