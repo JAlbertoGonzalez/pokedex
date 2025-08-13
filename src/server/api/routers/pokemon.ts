@@ -5,9 +5,6 @@ import { buildPokedexQuery } from "@/server/schemas/getAllInfinite.query";
 import { getPokemonInputSchema } from "@/server/schemas/getPokemon.input";
 import { getPokemonOutputSchema } from "@/server/schemas/getPokemon.output";
 import { getPokemonQuery } from "@/server/schemas/getPokemon.query";
-import { searchSpeciesBySpanishNameInputSchema } from "@/server/schemas/searchSpeciesBySpanishName.input";
-import { searchSpeciesBySpanishNameOutputSchema } from "@/server/schemas/searchSpeciesBySpanishName.output";
-import { searchSpeciesBySpanishNameQuery } from "@/server/schemas/searchSpeciesBySpanishName.query";
 
 // import { request } from "graphql-request";
 import { z } from "zod";
@@ -59,15 +56,4 @@ export const pokemonRouter = createTRPCRouter({
       return found;
     }),
 
-  searchSpeciesBySpanishName: publicProcedure
-    .input(searchSpeciesBySpanishNameInputSchema)
-    .query(async ({ input, ctx }) => {
-      const variables = { regex: input.regex };
-      const rawData = await ctx.graphql.request(searchSpeciesBySpanishNameQuery, variables);
-      const data = searchSpeciesBySpanishNameOutputSchema.parse(
-        (rawData as { pokemon_v2_pokemonspecies?: unknown })
-          .pokemon_v2_pokemonspecies ?? [],
-      );
-      return data;
-    }),
 });
