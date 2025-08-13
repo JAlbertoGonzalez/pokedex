@@ -32,6 +32,9 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setGeneration(undefined);
     setGenerationMode("exact");
     resetPagination();
+    setSearchResults([]);
+    setHasMoreResults(true);
+    setScrollPosition(0);
   };
 
   useEffect(() => {
