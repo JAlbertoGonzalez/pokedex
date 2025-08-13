@@ -7,8 +7,8 @@ import { PokemonType } from "@/app/_components/PokemonType";
 export type PokemonReal = {
   id: number;
   name: string;
-  height?: number;
-  weight?: number;
+  height?: number | null;
+  weight?: number | null;
   sprites?: {
     sprites?: {
       front_default?: string | null;

@@ -1,65 +1,14 @@
 "use client";
 import { PokemonType } from "@/app/_components/PokemonType";
+import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useState } from "react";
 import { PokemonDetails } from "./PokemonDetails";
 // El tipo importado no refleja la estructura real, así que lo declaramos aquí para evitar 'any'.
-type PokemonReal = {
-  id: number;
-  name: string;
-  height?: number;
-  weight?: number;
-  sprites?: {
-    sprites?: {
-      front_default?: string | null;
-      other?: {
-        [key: string]: any;
-        ["official-artwork"]?: {
-          front_default?: string | null;
-        };
-      };
-    };
-  }[];
-  pokemontypes?: { slot?: number; type: { name: string; nombre_localizado?: { name: string }[]; typenames?: { name: string; language?: { name: string } }[] } }[];
-  especie?: {
-    id?: number;
-    name?: string;
-    nombre_localizado?: { name: string }[];
-    entradas_localizadas?: { flavor_text: string; version: { name: string; versionnames: { name: string }[] } }[];
-    generation?: { id: number; name?: string; generationnames?: { name: string }[] };
-    anterior?: { id: number; name: string; pokemonspeciesnames: { name: string }[] } | null;
-    siguientes?: { id: number; name: string; pokemonspeciesnames: { name: string }[] }[];
-  };
-  pokemonstats?: {
-    base_stat: number;
-    effort?: number;
-    stat: {
-      name: string;
-      nombre_localizado: { name: string }[];
-    };
-  }[];
-  stats_normalized?: {
-    values: {
-      hp: number;
-      attack: number;
-      defense: number;
-      special_attack: number;
-      special_defense: number;
-      speed: number;
-    };
-    labels: {
-      hp: string;
-      attack: string;
-      defense: string;
-      special_attack: string;
-      special_defense: string;
-      speed: string;
-    };
-  };
-};
+type PokemonReal = Pokemon;
 
 type Props = {
-  pokemons: PokemonReal[];
+  pokemons: Pokemon[];
 };
 
 // Utilidad para convertir números a romanos
@@ -67,7 +16,7 @@ function toRoman(num: number): string {
   const romanNumerals = [
     "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
   ];
-  return romanNumerals[num] || num.toString();
+  return romanNumerals[num] ?? num.toString();
 }
 
 export function PokemonList({ pokemons }: Props) {
@@ -79,7 +28,7 @@ export function PokemonList({ pokemons }: Props) {
   const [showSpritesRaw, setShowSpritesRaw] = useState(false);
 
   // Función recursiva para extraer todas las URLs de sprites
-  function extractSpriteUrls(obj: any, prefix: string = ""): { label: string; url: string }[] {
+  function extractSpriteUrls(obj: object, prefix = ""): { label: string; url: string }[] {
     let result: { label: string; url: string }[] = [];
     if (!obj || typeof obj !== "object") return result;
     for (const [key, value] of Object.entries(obj)) {

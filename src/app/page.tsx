@@ -25,20 +25,16 @@ export default function Home() {
   const mode = typeMode === "and" ? "AND" : "OR";
   const nameRegex = searchDebounced.length > 0 ? searchDebounced : ".*";
 
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = api.pokemon.getAllInfiniteScroll.useInfiniteQuery(
-    {
-      limit,
-      offset,
-      nameRegex,
-      generationIds,
-      lang,
-      types: selectedTypes,
-      mode,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  );
+  // Llamada a la API que obtiene los Pokémon aplicando los filtros activos: búsqueda, tipos, generación y modo
+  const { data, isLoading, error } = api.pokemon.getAllInfiniteScroll.useQuery({
+    limit,
+    offset,
+    nameRegex,
+    generationIds,
+    lang,
+    types: selectedTypes,
+    mode,
+  });
 
   return (
     <div className="flex">
@@ -52,24 +48,19 @@ export default function Home() {
         generation={generation}
         setGeneration={setGeneration}
       />
-      <div className="container flex flex-col gap-12 px-4 py-16 w-full">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+      <div className="container flex flex-col gap-6 px-4 py-4 w-full">
+        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] py-8">
+          <span className="text-[hsl(280,100%,70%)]">T3</span> App: Pokédex
         </h1>
         <div className="w-full flex-1 flex flex-col">
-          <PokemonList pokemons={data?.pages.flatMap((page) => page.pokemon) ?? []} />
+          {isLoading ? (
+            <div className="flex justify-center items-center h-32">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-yellow-400"></div>
+            </div>
+          ) : (
+            <PokemonList pokemons={data?.pokemon ?? []} />
+          )}
         </div>
-        {hasNextPage && (
-          <div className="flex justify-center items-center py-4">
-            <button
-              className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition border border-purple-400"
-              onClick={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-            >
-              {isFetchingNextPage ? "Cargando..." : "Cargar más"}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
