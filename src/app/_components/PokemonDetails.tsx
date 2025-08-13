@@ -1,8 +1,8 @@
+import { PokemonStatsTable } from "@/app/_components/PokemonStatsTable";
 import { PokemonType } from "@/app/_components/PokemonType";
 import { extractSpriteUrls } from "@/app/_components/utils/extractSpriteUrls";
 import { toRoman } from "@/app/_components/utils/toRoman";
 import { normalizePokemonStats } from "@/server/schemas/getAllInfinite.output";
-import { PokemonStatsTable } from "@/app/_components/PokemonStatsTable";
 import { type getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -88,9 +88,6 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
                   <div style={{ marginBottom: 8 }}><strong>Peso:</strong> {pokemon.weight != null ? (pokemon.weight / 10).toFixed(1) + " kg" : "-"}</div>
                   <div style={{ marginBottom: 8 }}>
                     <strong>Primera aparición:</strong> {getGeneration(pokemon)}
-                    {pokemon.especie?.generation?.generationnames?.[0]?.name && (
-                      <> ({pokemon.especie.generation.generationnames[0].name})</>
-                    )}
                   </div>
                   <div style={{ marginBottom: 8 }}>
                     <strong>Tipos:</strong>
