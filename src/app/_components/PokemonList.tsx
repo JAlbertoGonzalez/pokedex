@@ -56,7 +56,7 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
             <th style={{ padding: "8px", textAlign: "left" }}>Sprite</th>
             <th style={{ padding: "8px", textAlign: "left" }}>Nombre</th>
             <th style={{ padding: "8px", textAlign: "left" }}>Tipos</th>
-            <th style={{ padding: "8px", textAlign: "left" }}>Generación</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>Gen</th>
           </tr>
         </thead>
         <tbody>

@@ -1,15 +1,15 @@
-import React, { useState } from "react";
 import type { NormalizedStats } from "@/server/schemas/getAllInfinite.output";
-import { Radar } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
+    Chart as ChartJS,
+    Filler,
+    Legend,
+    LineElement,
+    PointElement,
+    RadialLinearScale,
+    Tooltip,
 } from "chart.js";
+import React, { useState } from "react";
+import { Radar } from "react-chartjs-2";
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
