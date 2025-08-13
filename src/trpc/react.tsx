@@ -66,13 +66,11 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
   return (
     <LanguageProvider>
-      <FilterProvider>
         <QueryClientProvider client={queryClient}>
           <api.Provider client={trpcClient} queryClient={queryClient}>
             {props.children}
           </api.Provider>
         </QueryClientProvider>
-      </FilterProvider>
     </LanguageProvider>
   );
 }

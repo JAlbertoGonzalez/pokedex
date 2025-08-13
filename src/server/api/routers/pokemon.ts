@@ -6,7 +6,7 @@ import { getPokemonBySlugInput } from "@/server/schemas/getPokemonBySlug.input";
 import { getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import { PokemonBySlug } from "@/server/schemas/getPokemonBySlug.query";
 import type { infer as InferType } from 'zod';
-import { setCache, getCache } from "./file-cache";
+import { getCache, setCache } from "./file-cache";
 type GetAllInfiniteOutput = InferType<typeof getAllInfiniteOutputSchema>;
 type PokemonType = GetAllInfiniteOutput['pokemon'][number];
 

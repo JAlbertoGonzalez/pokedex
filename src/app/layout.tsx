@@ -3,8 +3,8 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
-import { Sidebar } from "@/app/_components/Sidebar";
 import { TRPCReactProvider } from "@/trpc/react";
+import { FilterProvider } from "./_components/FilterProvider";
 
 export const metadata: Metadata = {
   title: "Pokédex Alberto",
@@ -24,9 +24,11 @@ export default function RootLayout({
     <html lang="es" className={`${geist.variable}`}>
       <body>
         <TRPCReactProvider>
+          <FilterProvider>
           <div className="min-h-screen flex bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
             <main className="flex-1 flex flex-col h-screen overflow-y-auto">{children}</main>
           </div>
+          </FilterProvider>
         </TRPCReactProvider>
       </body>
     </html>

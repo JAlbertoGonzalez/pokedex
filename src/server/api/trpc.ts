@@ -17,7 +17,6 @@ import type { PrismaClient } from "@prisma/client";
 import { buildStorage, setupCache, type StorageValue } from "axios-cache-interceptor";
 import fs from 'fs';
 import { GraphQLClient } from "graphql-request";
-import { headers } from "next/headers";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 /**
@@ -135,7 +134,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
   if (t._config.isDev) {
     // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 2000;
+    const waitMs = Math.floor(Math.random() * 300) + 100;
     await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 

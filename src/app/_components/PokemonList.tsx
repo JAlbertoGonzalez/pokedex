@@ -4,6 +4,8 @@ import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { useContext } from "react";
+import { FilterContext } from "./FilterContext";
 
 
 type Props = {
@@ -22,6 +24,8 @@ function toRoman(num: number): string {
 
 export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
   const loadMoreRef = useRef<HTMLButtonElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const { scrollPosition, setScrollPosition, hasMoreResults } = useContext(FilterContext);
 
   // Carga automática al hacer scroll al final
   useEffect(() => {
@@ -36,6 +40,24 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
     observer.observe(btn);
     return () => observer.disconnect();
   }, [onLoadMore, isLoadingMore]);
+
+  // Restaurar scroll al montar
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollPosition;
+    }
+  }, []);
+
+  // Guardar scroll al hacer scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      setScrollPosition(container.scrollTop);
+    };
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [setScrollPosition]);
   const router = useRouter();
 
   const handleRowClick = (pokemon: Pokemon) => {
@@ -48,7 +70,7 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
   const getGeneration = (poke: Pokemon) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
 
   return (
-    <>
+    <div ref={scrollContainerRef} style={{ overflowY: "auto", maxHeight: "70vh" }}>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -104,7 +126,7 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
             <div className="flex justify-center items-center">
               <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-yellow-400 mx-auto"></div>
             </div>
-          ) : (
+          ) : hasMoreResults ? (
             <button
               ref={loadMoreRef}
               onClick={onLoadMore}
@@ -119,12 +141,17 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
                 fontSize: "1.1rem",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
               }}
+              disabled={!hasMoreResults}
             >
               Cargar más
             </button>
+          ) : (
+            <div style={{ color: "#888", fontWeight: "bold", marginTop: "1rem" }}>
+              No hay más resultados
+            </div>
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
