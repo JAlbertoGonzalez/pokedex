@@ -103,6 +103,7 @@ const PokedexBase = gql/* GraphQL */`
         pokemonspecy: {
           generation_id: { _in: $generationIds }
           _or: [
+            { evolutionchain: { pokemonspecies: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } } },
             { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } },
             { pokemonspecy: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } },
             { pokemonspecies: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } }
@@ -136,10 +137,7 @@ const PokedexTiposOR = gql/* GraphQL */`
         is_default: { _eq: true }
         pokemonspecy: {
           generation_id: { _in: $generationIds }
-          pokemonspeciesnames: {
-            language: { name: { _eq: $lang } }
-            name: { _iregex: $nameRegex }
-          }
+          evolutionchain: { pokemonspecies: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } }
         }
         pokemontypes: { type: { name: { _in: $typeNames } } }
       }
@@ -172,10 +170,7 @@ const PokedexTiposAND = gql/* GraphQL */`
         is_default: { _eq: true }
         pokemonspecy: {
           generation_id: { _in: $generationIds }
-          pokemonspeciesnames: {
-            language: { name: { _eq: $lang } }
-            name: { _iregex: $nameRegex }
-          }
+          evolutionchain: { pokemonspecies: { pokemonspeciesnames: { language: { name: { _eq: $lang } }, name: { _iregex: $nameRegex } } } }
         }
         _and: $typeAll
       }
@@ -257,3 +252,4 @@ export function buildPokedexQuery(params: BuildParams): BuiltQuery<BaseVars | Or
   const variables: AndVars = { limit, offset, nameRegex, generationIds, lang, typeAll: buildTypeAllAND(types) };
   return { document: PokedexTiposAND, variables };
 }
+
