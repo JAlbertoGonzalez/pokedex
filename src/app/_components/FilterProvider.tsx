@@ -68,7 +68,7 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Actualizar resultados globales cuando llegan nuevos datos
   React.useEffect(() => {
     if (data?.pokemon) {
-      setSearchResults(prev => offset === 0 ? data.pokemon : [...prev, ...data.pokemon]);
+      setSearchResults(offset === 0 ? data.pokemon : prev => [...prev, ...data.pokemon]);
       setHasMoreResults(data.pokemon.length === limit);
     }
     if (data?.pokemon && data.pokemon.length < limit) {
@@ -76,6 +76,12 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [data?.pokemon, offset, limit]);
 
+  // Resetear offset y resultados al cambiar filtros
+  React.useEffect(() => {
+    setOffset(0);
+    setSearchResults([]);
+    setHasMoreResults(true);
+  }, [search, selectedTypes, typeMode, generation, generationMode, languageCode]);
   // Método para cargar más resultados (paginación)
   const loadMore = () => {
     setOffset(prev => prev + limit);
