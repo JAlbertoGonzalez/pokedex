@@ -14,12 +14,15 @@ export function TextSearch() {
   }, [localValue, setSearch]);
 
   return (
-    <input
-      type="text"
-      placeholder="Buscar Pokémon..."
-      className="h-10 w-full px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
-      value={localValue}
-      onChange={e => setLocalValue(e.target.value)}
-    />
+    <div className="flex flex-col gap-1">
+      <label className="text-sm text-purple-300 font-semibold mb-1">Nombre:</label>
+      <input
+        type="text"
+        placeholder="Buscar Pokémon..."
+        className="h-10 w-full px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
+        value={localValue}
+        onChange={e => setLocalValue(e.target.value)}
+      />
+    </div>
   );
 }

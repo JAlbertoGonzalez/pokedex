@@ -31,7 +31,7 @@ export function TypeFilter() {
   return (
     <>
       <div className="flex items-center justify-between mb-1">
-        <label className="text-sm text-purple-300">Filtrar por tipo:</label>
+        <label className="text-sm text-purple-300">Tipo:</label>
         <button
           type="button"
           className={`ml-2 px-3 py-1 rounded-full border border-purple-400 bg-[#23214a] text-xs font-bold transition-colors ${typeMode === "and" ? "text-green-400" : "text-yellow-400"}`}

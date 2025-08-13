@@ -10,7 +10,7 @@ export function GenerationFilter() {
   return (
   <div className="flex flex-col gap-2 mb-2">
       <div className="flex items-center justify-between mb-2">
-        <label className="text-sm text-purple-300">Filtrar por generación:</label>
+        <label className="text-sm text-purple-300">Generación:</label>
         <div className="flex gap-0">
           <button
             type="button"
