@@ -56,7 +56,7 @@ export default function PokemonSlugPage({ params }: { params: { slug: string } }
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
           }}
         >
-          🏠 Ir a la Home
+          Home
         </button>
       </div>
    <PokemonDetails pokemon={pokemon} />
