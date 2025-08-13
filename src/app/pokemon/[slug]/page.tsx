@@ -23,22 +23,38 @@ export default function PokemonSlugPage({ params }: { params: { slug: string } }
 
   return (
     <main style={{ padding: "2rem" }}>
-      <button
-        onClick={() => router.back()}
-        style={{
-          marginBottom: "1.5rem",
-          padding: "0.5rem 1.2rem",
-          background: "#eab308",
-          color: "#23214a",
-          border: "none",
-          borderRadius: "8px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-        }}
-      >
-        ← Volver atrás
-      </button>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }}>
+        <button
+          onClick={() => router.back()}
+          style={{
+            padding: "0.5rem 1.2rem",
+            background: "#eab308",
+            color: "#23214a",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+          }}
+        >
+          ← Volver atrás
+        </button>
+        <button
+          onClick={() => router.push("/")}
+          style={{
+            padding: "0.5rem 1.2rem",
+            background: "#eab308",
+            color: "#23214a",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+          }}
+        >
+          🏠 Ir a la Home
+        </button>
+      </div>
    <PokemonDetails pokemon={pokemon} />
     </main>
   );

@@ -7,6 +7,7 @@ import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import { normalizePokemonStats } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 
@@ -19,6 +20,7 @@ interface Props {
 
 
 export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
+  const router = useRouter();
   const stats_normalized = normalizePokemonStats(pokemon.pokemonstats);
   const [activeTab, setActiveTab] = useState(0);
   const [selectedSprite, setSelectedSprite] = useState<string>("");
@@ -40,7 +42,7 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
   const getGeneration = (poke: Pokemon) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
 
   return (
-    <div style={{ background: "#23214a", padding: "32px", borderRadius: "16px", color: "#fff", position: "relative", boxShadow: "0 2px 16px rgba(0,0,0,0.3)", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
+  <div style={{ background: "#23214a", padding: "32px", borderRadius: "16px", color: "#fff", position: "relative", boxShadow: "0 2px 16px rgba(0,0,0,0.3)", maxWidth: "90vw" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 32 }}>
         {selectedSprite && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
@@ -82,6 +84,7 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
               </h2>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 24, marginTop: 16, alignItems: "flex-start" }}>
                 <div style={{ flex: 1 }}>
+                  <div style={{ marginBottom: 8 }}><strong>Altura:</strong> {pokemon.height != null ? (pokemon.height / 10).toFixed(2) + " m" : "-"}</div>
                   <div style={{ marginBottom: 8 }}><strong>Peso:</strong> {pokemon.weight != null ? (pokemon.weight / 10).toFixed(1) + " kg" : "-"}</div>
                   <div style={{ marginBottom: 8 }}>
                     <strong>Primera aparición:</strong> {getGeneration(pokemon)}
@@ -152,43 +155,49 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
           </div>
           <div style={{ marginTop: 8 }}>
             <strong>Cadena de evolución:</strong>
-            <table style={{ width: "100%", marginTop: 8, marginBottom: 8, borderCollapse: "separate", borderSpacing: "0 8px" }}>
+            <table style={{ width: "100%", marginTop: 8, marginBottom: 8, borderCollapse: "separate", borderSpacing: "0 8px", textAlign: "center", verticalAlign: "middle" }}>
               <thead>
-                <tr>
-                  <th style={{ color: "#eab308", fontWeight: "bold", fontSize: "1rem", background: "none", border: "none" }}>Evolución de</th>
-                  <th style={{ color: "#eab308", fontWeight: "bold", fontSize: "1rem", background: "none", border: "none" }}></th>
-                  <th style={{ color: "#eab308", fontWeight: "bold", fontSize: "1rem", background: "none", border: "none" }}>Evoluciona a</th>
+                <tr style={{ verticalAlign: "middle" }}>
+                    <th style={{ color: "#eab308", fontWeight: "bold", fontSize: "1rem", background: "transparent !important", border: "none", textAlign: "center" }}>Evolución de</th>
+                    <th style={{ background: "transparent !important", border: "none" }}></th>
+                    <th style={{ color: "#eab308", fontWeight: "bold", fontSize: "1rem", background: "transparent !important", border: "none", textAlign: "center" }} colSpan={2}>Pokémon actual</th>
+                    <th style={{ background: "transparent !important", border: "none" }}></th>
+                    <th style={{ color: "#eab308", fontWeight: "bold", fontSize: "1rem", background: "transparent !important", border: "none", textAlign: "center" }}>Evoluciona a</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   {/* Evolución anterior */}
-                  <td style={{ textAlign: "center" }}>
+                    <td style={{ textAlign: "center", verticalAlign: "middle", position: "relative" }}>
                     {pokemon.especie?.anterior ? (() => {
-                      const anteriorId = pokemon.especie?.anterior?.id;
-                      // Eliminar búsqueda en pokemonsList, solo muestra nombre y sprite si existen
-                      const anterior = undefined;
+                      const anteriorName = pokemon.especie.anterior.name;
+                      const anteriorDisplay = pokemon.especie.anterior.pokemonspeciesnames?.[0]?.name ?? anteriorName;
+                      const anteriorSprite = pokemon.especie.anterior.pokemon_default?.[0]?.sprites?.[0]?.sprites?.front_default;
                       return (
                         <a
-                          href="#"
-                          style={{ background: "#18173a", borderRadius: 8, padding: "4px 12px", color: "#fff", textDecoration: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
+                          href={`/pokemon/${anteriorName}`}
+                          style={{ background: "#18173a", borderRadius: 8, padding: "8px 16px", color: "#fff", textDecoration: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}
                           onClick={e => {
                             e.preventDefault();
-                            if (anterior) {
-                              // Aquí podrías emitir un evento o usar un callback para cambiar el Pokémon mostrado
-                            }
+                            router.push(`/pokemon/${anteriorName}`);
                           }}
                         >
-                          {/* No se muestra sprite de anterior porque no se tiene el objeto */}
-                          {pokemon.especie.anterior.pokemonspeciesnames?.[0]?.name ?? pokemon.especie.anterior.name}
+                          {anteriorSprite && (
+                            <Image src={anteriorSprite} alt={anteriorDisplay} width={48} height={48} style={{ background: "#fff", borderRadius: 8 }} unoptimized />
+                          )}
+                          <span style={{ marginTop: 4, fontSize: "1rem", color: "#fff" }}>{anteriorDisplay}</span>
                         </a>
                       );
                     })() : (
-                      <span style={{ background: "#18173a", borderRadius: 8, padding: "4px 12px" }}>-</span>
+                      <span style={{ background: "#18173a", borderRadius: 8, padding: "8px 16px" }}>-</span>
                     )}
                   </td>
+                  {/* Flecha derecha */}
+                  <td style={{ width: 0, padding: 0, verticalAlign: "middle" }}>
+                    <span style={{ display: "inline-block", fontSize: "2rem", color: "#eab308" }}>&rarr;</span>
+                  </td>
                   {/* Pokémon actual */}
-                  <td style={{ textAlign: "center" }}>
+                    <td colSpan={2} style={{ textAlign: "center", verticalAlign: "middle", position: "relative" }}>
                     <div style={{ background: "#23214a", borderRadius: 8, padding: "8px 16px", fontWeight: "bold", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                       {getSprite(pokemon) ? (
                         <Image src={getSprite(pokemon)!} alt={getName(pokemon)} width={64} height={64} style={{ background: "#fff", borderRadius: 8 }} unoptimized />
@@ -196,28 +205,32 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
                       <span style={{ marginTop: 4, fontSize: "1rem", color: "#fff" }}>{getName(pokemon)}</span>
                     </div>
                   </td>
+                  {/* Flecha derecha */}
+                  <td style={{ width: 0, padding: 0, verticalAlign: "middle" }}>
+                    <span style={{ display: "inline-block", fontSize: "2rem", color: "#eab308" }}>&rarr;</span>
+                  </td>
                   {/* Evoluciones siguientes */}
-                  <td style={{ textAlign: "center" }}>
+                  <td style={{ textAlign: "center", verticalAlign: "middle", position: "relative" }}>
                     {pokemon.especie?.siguientes && pokemon.especie.siguientes.length > 0 ? (
-                      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+                      <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", maxWidth: "320px", margin: "0 auto" }}>
                         {pokemon.especie.siguientes.map((ev, idx) => {
-                          const siguienteId = ev.id;
-                          // Eliminar búsqueda en pokemonsList, solo muestra nombre y sprite si existen
-                          const siguiente = undefined;
+                          const siguienteName = ev.name;
+                          const siguienteDisplay = ev.pokemonspeciesnames?.[0]?.name ?? siguienteName;
+                          const siguienteSprite = ev.pokemon_default?.[0]?.sprites?.[0]?.sprites?.front_default;
                           return (
                             <a
                               key={idx}
-                              href="#"
-                              style={{ background: "#18173a", borderRadius: 8, padding: "4px 12px", color: "#fff", textDecoration: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
+                              href={`/pokemon/${siguienteName}`}
+                              style={{ background: "#18173a", borderRadius: 8, padding: "8px 16px", color: "#fff", textDecoration: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}
                               onClick={e => {
                                 e.preventDefault();
-                                if (siguiente) {
-                                  // Aquí podrías emitir un evento o usar un callback para cambiar el Pokémon mostrado
-                                }
+                                router.push(`/pokemon/${siguienteName}`);
                               }}
                             >
-                              {/* No se muestra sprite de siguiente porque no se tiene el objeto */}
-                              {ev.pokemonspeciesnames?.[0]?.name ?? ev.name}
+                              {siguienteSprite && (
+                                <Image src={siguienteSprite} alt={siguienteDisplay} width={48} height={48} style={{ background: "#fff", borderRadius: 8 }} unoptimized />
+                              )}
+                              <span style={{ marginTop: 4, fontSize: "1rem", color: "#fff" }}>{siguienteDisplay}</span>
                             </a>
                           );
                         })}
