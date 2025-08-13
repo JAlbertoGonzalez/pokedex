@@ -1,7 +1,7 @@
 "use client";
 import { POKEMON_TYPE_COLORS } from "@/app/_components/PokemonType";
-import { useContext } from "react";
 import dynamic from "next/dynamic";
+import { useContext } from "react";
 import { FilterContext } from "./FilterContext";
 
 
@@ -49,7 +49,9 @@ export function TypeFilter() {
         options={typeOptions}
         value={selectedTypes.map(t => typeOptions.find(o => o.value === t)).filter(Boolean)}
         onChange={selected => {
-          const values = Array.isArray(selected) ? selected.map((t) => t.value) : [];
+          const values = Array.isArray(selected)
+            ? selected.map((t) => (t as { value: string }).value)
+            : [];
           if (values.length <= 2) setSelectedTypes(values);
         }}
         classNamePrefix="react-select"
@@ -57,20 +59,24 @@ export function TypeFilter() {
         styles={{
           control: (base) => ({ ...base, backgroundColor: '#18163a', borderColor: '#a78bfa', color: '#fff' }),
           menu: (base) => ({ ...base, backgroundColor: '#23214a', color: '#fff' }),
-          multiValue: (base, { data }) => {
+          multiValue: (base, props) => {
+            const data = props.data as { value: string };
             const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#a78bfa';
             return { ...base, backgroundColor: color, color: '#23214a', borderRadius: '999px', padding: '2px 8px', margin: '4px', display: 'inline-flex', alignItems: 'center', width: 'auto', minWidth: '0', maxWidth: '100%' };
           },
-          multiValueLabel: (base, { data }) => {
+          multiValueLabel: (base, props) => {
+            const data = props.data as { value: string };
             const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#23214a';
             return { ...base, color: '#23214a', fontWeight: 'bold', backgroundColor: color };
           },
-          multiValueRemove: (base, { data }) => {
+          multiValueRemove: (base, props) => {
+            const data = props.data as { value: string };
             const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#c4b5fd';
             return { ...base, color: '#23214a', backgroundColor: color, borderRadius: '999px', ':hover': { backgroundColor: color, color: '#23214a' } };
           },
           option: (base, state) => {
-            const color = POKEMON_TYPE_COLORS.find(t => t.type === state.data.value)?.color ?? '#23214a';
+            const data = state.data as { value: string };
+            const color = POKEMON_TYPE_COLORS.find(t => t.type === data.value)?.color ?? '#23214a';
             return {
               ...base,
               backgroundColor: color,

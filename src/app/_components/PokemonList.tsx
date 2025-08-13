@@ -3,7 +3,7 @@ import { PokemonType } from "@/app/_components/PokemonType";
 import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 
 type Props = {
@@ -29,7 +29,7 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
     const btn = loadMoreRef.current;
     if (!btn) return;
     const observer = new window.IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+      if (entries[0]?.isIntersecting) {
         onLoadMore();
       }
     }, { threshold: 1 });
