@@ -74,10 +74,38 @@ export function PokemonList({ pokemons }: Props) {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [showRaw, setShowRaw] = useState(false);
+  // Estado para el sprite seleccionado y lista de sprites
+  const [selectedSprite, setSelectedSprite] = useState<string>("");
+  const [spriteList, setSpriteList] = useState<{ label: string; url: string }[]>([]);
+  const [showSpritesRaw, setShowSpritesRaw] = useState(false);
+
+  // Función recursiva para extraer todas las URLs de sprites
+  function extractSpriteUrls(obj: any, prefix: string = ""): { label: string; url: string }[] {
+    let result: { label: string; url: string }[] = [];
+    if (!obj || typeof obj !== "object") return result;
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === "string" && value.startsWith("http")) {
+        result.push({ label: (prefix ? prefix + " > " : "") + key.replace(/_/g, " "), url: value });
+      } else if (typeof value === "object" && value !== null) {
+        result = result.concat(extractSpriteUrls(value, (prefix ? prefix + " > " : "") + key.replace(/_/g, " ")));
+      }
+    }
+    return result;
+  }
 
   const handleRowClick = (pokemon: PokemonReal) => {
     setSelectedPokemon(pokemon);
     setShowModal(true);
+    // Extraer todas las URLs de sprites recursivamente
+    const spriteObj = pokemon.sprites?.[0]?.sprites;
+    const sprites = extractSpriteUrls(spriteObj);
+  setSpriteList(sprites);
+  // Buscar el sprite 'official-artwork' en la lista
+  // Buscar la opción que contenga exactamente 'other > official artwork > front default'
+  const defaultSprite = sprites.find(s => s.label.trim().toLowerCase() === 'other > official artwork > front default')?.url
+    ?? sprites.find(s => s.label.toLowerCase().includes('official artwork'))?.url
+    ?? sprites[0]?.url ?? "";
+  setSelectedSprite(defaultSprite);
   };
 
   const closeModal = () => {
@@ -196,14 +224,42 @@ export function PokemonList({ pokemons }: Props) {
             </button>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 32 }}>
               {getArtwork(selectedPokemon) && (
-                <Image
-                  src={getArtwork(selectedPokemon)!}
-                  alt={getName(selectedPokemon)}
-                  width={256}
-                  height={256}
-                  style={{ display: "block", background: "#fff", borderRadius: 16 }}
-                  unoptimized
-                />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                  <Image
+                    src={getArtwork(selectedPokemon)!}
+                    alt={getName(selectedPokemon)}
+                    width={256}
+                    height={256}
+                    style={{ display: "block", background: "#fff", borderRadius: 16 }}
+                    unoptimized
+                  />
+                  {/* Dropdown de sprites */}
+                  {spriteList.length > 0 && (
+                    <div style={{ width: "100%", textAlign: "center" }}>
+                      <label htmlFor="sprite-select" style={{ color: "#eab308", fontWeight: "bold", marginRight: 8 }}>Sprite:</label>
+                      <select
+                        id="sprite-select"
+                        value={selectedSprite}
+                        onChange={e => setSelectedSprite(e.target.value)}
+                        style={{ padding: "4px 12px", borderRadius: 8, background: "#18173a", color: "#fff", border: "1px solid #eab308", fontWeight: "bold" }}
+                      >
+                        {spriteList.map((sprite, idx) => (
+                          <option key={idx} value={sprite.url}>{sprite.label}</option>
+                        ))}
+                      </select>
+                      <div style={{ marginTop: 12 }}>
+                        <Image
+                          src={selectedSprite}
+                          alt={getName(selectedPokemon) + " sprite"}
+                          width={96}
+                          height={96}
+                          style={{ background: "#fff", borderRadius: 8 }}
+                          unoptimized
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 32 }}>
