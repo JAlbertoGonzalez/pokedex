@@ -76,9 +76,13 @@ function extractSpriteUrls(obj: any, prefix: string = ""): { label: string; url:
   if (!obj || typeof obj !== "object") return result;
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === "string" && value.startsWith("http")) {
-      result.push({ label: (prefix ? prefix + " > " : "") + key.replace(/_/g, " "), url: value });
+      // Construir el path y mostrar solo los dos últimos elementos separados por '/'
+      const fullPath = (prefix ? prefix + "/" : "") + key.replace(/_/g, " ");
+      const parts = fullPath.split("/").map(s => s.trim()).filter(Boolean);
+      const shortLabel = parts.slice(-2).join("/");
+      result.push({ label: shortLabel, url: value });
     } else if (typeof value === "object" && value !== null) {
-      result = result.concat(extractSpriteUrls(value, (prefix ? prefix + " > " : "") + key.replace(/_/g, " ")));
+      result = result.concat(extractSpriteUrls(value, (prefix ? prefix + "/" : "") + key.replace(/_/g, " ")));
     }
   }
   return result;
@@ -94,11 +98,10 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
     const spriteObj = pokemon.sprites?.[0]?.sprites;
     const sprites = extractSpriteUrls(spriteObj);
     setSpriteList(sprites);
-    // Buscar el sprite 'official-artwork' en la lista
-    const defaultSprite = sprites.find(s => s.label.trim().toLowerCase() === 'other > official artwork > front default')?.url
-      ?? sprites.find(s => s.label.toLowerCase().includes('official artwork'))?.url
-      ?? sprites[0]?.url ?? "";
-    setSelectedSprite(defaultSprite);
+    // Usar getArtwork como valor por defecto si existe en la lista
+    const artworkUrl = getArtwork(pokemon);
+    const artworkSprite = sprites.find(s => s.url === artworkUrl);
+    setSelectedSprite(artworkSprite?.url ?? sprites[0]?.url ?? "");
   }, [pokemon]);
 
   // helpers para acceder a sprite, artwork y nombre
@@ -110,10 +113,10 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
   return (
     <div style={{ background: "#23214a", padding: "32px", borderRadius: "16px", color: "#fff", position: "relative", boxShadow: "0 2px 16px rgba(0,0,0,0.3)", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 32 }}>
-        {getArtwork(pokemon) && (
+        {selectedSprite && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <Image
-              src={getArtwork(pokemon)!}
+              src={selectedSprite}
               alt={getName(pokemon)}
               width={256}
               height={256}
@@ -128,22 +131,16 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
                   id="sprite-select"
                   value={selectedSprite}
                   onChange={e => setSelectedSprite(e.target.value)}
-                  style={{ padding: "4px 12px", borderRadius: 8, background: "#18173a", color: "#fff", border: "1px solid #eab308", fontWeight: "bold" }}
+                  style={{ padding: "4px 12px", borderRadius: 8, background: "#18173a", color: "#fff", border: "1px solid #eab308", fontWeight: "bold", minWidth: 120, maxWidth: 180, width: "auto" }}
                 >
-                  {spriteList.map((sprite, idx) => (
-                    <option key={idx} value={sprite.url}>{sprite.label}</option>
-                  ))}
+                  {spriteList.map((sprite, idx) => {
+                    const parts = String(sprite.label).split("/").map(s => s.trim()).filter(Boolean);
+                    const shortLabel = parts.slice(-2).join("/");
+                    return (
+                      <option key={idx} value={sprite.url}>{shortLabel}</option>
+                    );
+                  })}
                 </select>
-                <div style={{ marginTop: 12 }}>
-                  <Image
-                    src={selectedSprite}
-                    alt={getName(pokemon) + " sprite"}
-                    width={96}
-                    height={96}
-                    style={{ background: "#fff", borderRadius: 8 }}
-                    unoptimized
-                  />
-                </div>
               </div>
             )}
           </div>
@@ -181,7 +178,10 @@ export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
                         {pokemon.stats_normalized
                           ? Object.entries(pokemon.stats_normalized.labels).map(([key, label]) => (
                               <tr key={key}>
-                                <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{String(label)}</td>
+                                <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{(() => {
+                                  const parts = String(label).split("/").map(s => s.trim()).filter(Boolean);
+                                  return parts.slice(-2).join("/");
+                                })()}</td>
                                 <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{pokemon.stats_normalized.values[key as keyof typeof pokemon.stats_normalized.values]}</td>
                               </tr>
                             ))
