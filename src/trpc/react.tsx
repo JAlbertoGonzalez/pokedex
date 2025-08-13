@@ -7,8 +7,8 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { useState } from "react";
 import SuperJSON from "superjson";
 
-import { LanguageProvider } from "@/app/_components/LanguageProvider";
 import { FilterProvider } from "@/app/_components/FilterProvider";
+import { LanguageProvider } from "@/app/_components/LanguageProvider";
 import { type AppRouter } from "@/server/api/root";
 import { createQueryClient } from "./query-client";
 

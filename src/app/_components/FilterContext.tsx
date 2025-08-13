@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 "use client";
 import type { Dispatch, SetStateAction } from "react";
 import { createContext } from "react";
@@ -15,6 +16,10 @@ export type FilterContextType = {
   setGeneration: Dispatch<SetStateAction<number | undefined>>;
   generationMode: "exact" | "min" | "max";
   setGenerationMode: Dispatch<SetStateAction<"exact" | "min" | "max">>;
+  limit: number;
+  setLimit: Dispatch<SetStateAction<number>>;
+  offset: number;
+  setOffset: Dispatch<SetStateAction<number>>;
   resetFilters: () => void;
 };
 
@@ -31,5 +36,9 @@ export const FilterContext = createContext<FilterContextType>({
   setGeneration: () => {},
   generationMode: "exact",
   setGenerationMode: () => {},
+  limit: 20,
+  setLimit: () => {},
+  offset: 0,
+  setOffset: () => {},
   resetFilters: () => {},
 });

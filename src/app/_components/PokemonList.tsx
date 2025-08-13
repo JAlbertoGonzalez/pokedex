@@ -3,10 +3,13 @@ import { PokemonType } from "@/app/_components/PokemonType";
 import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useRef, useEffect } from "react";
 
 
 type Props = {
   pokemons: Pokemon[];
+  onLoadMore?: () => void;
+  isLoadingMore?: boolean;
 };
 
 // Utilidad para convertir números a romanos
@@ -17,7 +20,22 @@ function toRoman(num: number): string {
   return romanNumerals[num] ?? num.toString();
 }
 
-export function PokemonList({ pokemons }: Props) {
+export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
+  const loadMoreRef = useRef<HTMLButtonElement | null>(null);
+
+  // Carga automática al hacer scroll al final
+  useEffect(() => {
+    if (!onLoadMore || isLoadingMore) return;
+    const btn = loadMoreRef.current;
+    if (!btn) return;
+    const observer = new window.IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        onLoadMore();
+      }
+    }, { threshold: 1 });
+    observer.observe(btn);
+    return () => observer.disconnect();
+  }, [onLoadMore, isLoadingMore]);
   const router = useRouter();
 
   const handleRowClick = (pokemon: Pokemon) => {
@@ -80,7 +98,33 @@ export function PokemonList({ pokemons }: Props) {
           ))}
         </tbody>
       </table>
-
+      {onLoadMore && (
+        <div style={{ textAlign: "center", margin: "2rem 0" }}>
+          {isLoadingMore ? (
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-yellow-400 mx-auto"></div>
+            </div>
+          ) : (
+            <button
+              ref={loadMoreRef}
+              onClick={onLoadMore}
+              style={{
+                padding: "0.75rem 2rem",
+                background: "#eab308",
+                color: "#23214a",
+                border: "none",
+                borderRadius: "8px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontSize: "1.1rem",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+              }}
+            >
+              Cargar más
+            </button>
+          )}
+        </div>
+      )}
     </>
   );
 }

@@ -30,6 +30,10 @@ export function Sidebar() {
                 Resetear filtros
               </button>
             </div>
+            <pre>
+                      {JSON.stringify(filters, null, 2)}
+                      </pre>
+
             <div className="mt-auto text-xs text-purple-400 text-center opacity-70 py-2">
               <span>Pokédex T3 &mdash; {new Date().getFullYear()}</span>
             </div>
