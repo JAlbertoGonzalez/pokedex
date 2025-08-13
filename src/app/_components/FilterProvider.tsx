@@ -78,10 +78,13 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Resetear offset y resultados al cambiar filtros
   React.useEffect(() => {
-    setOffset(0);
-    setSearchResults([]);
-    setHasMoreResults(true);
-  }, [search, selectedTypes, typeMode, generation, generationMode, languageCode]);
+    if (offset !== 0) {
+      setOffset(0);
+      setSearchResults([]);
+      setHasMoreResults(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, selectedTypes, typeMode, generation, generationMode]);
   // Método para cargar más resultados (paginación)
   const loadMore = () => {
     setOffset(prev => prev + limit);
