@@ -1,14 +1,9 @@
 "use client";
-import type { Dispatch, SetStateAction } from "react";
-import Select from "react-select";
 import { POKEMON_TYPE_COLORS } from "@/app/_components/PokemonType";
+import { useContext } from "react";
+import Select from "react-select";
+import { FilterContext } from "./FilterContext";
 
-interface TypeFilterProps {
-  selectedTypes: string[];
-  setSelectedTypes: Dispatch<SetStateAction<string[]>>;
-  typeMode: "and" | "or";
-  setTypeMode: Dispatch<SetStateAction<"and" | "or">>;
-}
 
 const typeOptions = [
   { value: "normal", label: "Normal" },
@@ -31,7 +26,8 @@ const typeOptions = [
   { value: "fairy", label: "Hada" },
 ];
 
-export function TypeFilter({ selectedTypes, setSelectedTypes, typeMode, setTypeMode }: TypeFilterProps) {
+export function TypeFilter() {
+  const { selectedTypes, setSelectedTypes, typeMode, setTypeMode } = useContext(FilterContext);
   return (
     <>
       <div className="flex items-center justify-between mb-1">

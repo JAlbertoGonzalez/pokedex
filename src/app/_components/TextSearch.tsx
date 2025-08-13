@@ -1,12 +1,10 @@
 "use client";
-import type { Dispatch, SetStateAction } from "react";
+import { useContext, type Dispatch, type SetStateAction } from "react";
+import { FilterContext } from "./FilterContext";
 
-interface TextSearchProps {
-  search: string;
-  setSearch: Dispatch<SetStateAction<string>>;
-}
 
-export function TextSearch({ search, setSearch }: TextSearchProps) {
+export function TextSearch() {
+  const { search, setSearch } = useContext(FilterContext);
   return (
     <input
       type="text"

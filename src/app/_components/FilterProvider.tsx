@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FilterContext, FilterContextType } from "./FilterContext";
+import { FilterContext, type FilterContextType } from "./FilterContext";
 
 export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [search, setSearch] = useState("");
@@ -9,7 +9,16 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [generation, setGeneration] = useState<number | undefined>(undefined);
   const [generationMode, setGenerationMode] = useState<"exact" | "min" | "max">("exact");
 
-  const value: FilterContextType = {
+  const resetFilters = () => {
+    setSearch("");
+    setSelectedTypes([]);
+    setLanguageCode("es");
+    setTypeMode("and");
+    setGeneration(undefined);
+    setGenerationMode("exact");
+  };
+
+  const value: FilterContextType & { resetFilters: () => void } = {
     search,
     setSearch,
     selectedTypes,
@@ -22,6 +31,7 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setGeneration,
     generationMode,
     setGenerationMode,
+    resetFilters,
   };
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;

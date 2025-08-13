@@ -1,44 +1,16 @@
 "use client";
 
-import type { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
+import { useContext } from "react";
+import { FilterContext } from "./FilterContext";
 import { GenerationFilter } from "./GenerationFilter";
 import { TextSearch } from "./TextSearch";
 import { TypeFilter } from "./TypeFilter";
+// ...import duplicado eliminado...
 
-type SidebarProps = {
-  search: string;
-  setSearch: Dispatch<SetStateAction<string>>;
-  selectedTypes: string[];
-  setSelectedTypes: Dispatch<SetStateAction<string[]>>;
-  typeMode: "and" | "or";
-  setTypeMode: Dispatch<SetStateAction<"and" | "or">>;
-  generation?: number;
-  setGeneration: Dispatch<SetStateAction<number | undefined>>;
-};
-
-export function Sidebar({
-  search,
-  setSearch,
-  selectedTypes,
-  setSelectedTypes,
-  typeMode,
-  setTypeMode,
-  generation,
-  setGeneration
-}: SidebarProps) {
-  // La búsqueda avanzada siempre estará visible, no se necesita estado
-  // Estado para mostrar/ocultar el JSON raw
-  // Opciones de tipos de Pokémon
-  const [active, setActive] = useState<"min" | "exact" | "max">("exact");
-
-  const handleReset = () => {
-    setSearch("");
-    setSelectedTypes([]);
-    setTypeMode("and");
-    setGeneration(undefined);
-  };
-
+export function Sidebar() {
+  const filter = useContext(FilterContext);
+  if (!filter) throw new Error("Sidebar debe estar dentro de FilterProvider");
+  const { search, setSearch, selectedTypes, setSelectedTypes, typeMode, setTypeMode, generation, setGeneration, generationMode, setGenerationMode, resetFilters } = filter;
   return (
     <>
       {/* Sidebar escritorio */}
@@ -50,13 +22,15 @@ export function Sidebar({
               <TextSearch search={search} setSearch={setSearch} />
             </div>
             <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
-              <GenerationFilter generation={generation?.toString() ?? ""} setGeneration={v => setGeneration(v === "" ? undefined : Number(v))} active={active} setActive={setActive} />
+              <div className="mb-2 p-2 bg-[#18163a] rounded text-xs text-purple-300">
+              </div>
+              <GenerationFilter />
               <TypeFilter selectedTypes={selectedTypes} setSelectedTypes={setSelectedTypes} typeMode={typeMode} setTypeMode={setTypeMode} />
               {/* El switch visual ya está incluido arriba, se elimina el select */}
               <button
                 type="button"
                 className="h-10 px-4 py-2 rounded bg-purple-700 text-white border border-purple-400 hover:bg-purple-800 transition mt-4"
-                onClick={handleReset}
+                onClick={resetFilters}
               >
                 Reset filtros
               </button>

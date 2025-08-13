@@ -8,6 +8,7 @@ import { useState } from "react";
 import SuperJSON from "superjson";
 
 import { LanguageProvider } from "@/app/_components/LanguageProvider";
+import { FilterProvider } from "@/app/_components/FilterProvider";
 import { type AppRouter } from "@/server/api/root";
 import { createQueryClient } from "./query-client";
 
@@ -65,11 +66,13 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
   return (
     <LanguageProvider>
-      <QueryClientProvider client={queryClient}>
-        <api.Provider client={trpcClient} queryClient={queryClient}>
-          {props.children}
-        </api.Provider>
-      </QueryClientProvider>
+      <FilterProvider>
+        <QueryClientProvider client={queryClient}>
+          <api.Provider client={trpcClient} queryClient={queryClient}>
+            {props.children}
+          </api.Provider>
+        </QueryClientProvider>
+      </FilterProvider>
     </LanguageProvider>
   );
 }

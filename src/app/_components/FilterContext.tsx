@@ -13,6 +13,21 @@ export type FilterContextType = {
   setTypeMode: Dispatch<SetStateAction<"and" | "or">>;
   generation?: number;
   setGeneration: Dispatch<SetStateAction<number | undefined>>;
+  generationMode: "exact" | "min" | "max";
+  setGenerationMode: Dispatch<SetStateAction<"exact" | "min" | "max">>;
 };
 
-export const FilterContext = createContext<FilterContextType | undefined>(undefined);
+export const FilterContext = createContext<FilterContextType>({
+  search: "",
+  setSearch: () => {},
+  selectedTypes: [],
+  setSelectedTypes: () => {},
+  languageCode: "es",
+  setLanguageCode: () => {},
+  typeMode: "and",
+  setTypeMode: () => {},
+  generation: undefined,
+  setGeneration: () => {},
+  generationMode: "exact",
+  setGenerationMode: () => {},
+});

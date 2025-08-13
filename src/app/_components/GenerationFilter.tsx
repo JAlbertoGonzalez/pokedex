@@ -1,15 +1,11 @@
-import type { Generation, GetGenerationsOutput } from "@/server/schemas/getGenerations.types";
 import { api } from "@/trpc/react";
-import React from "react";
+import React, { useContext } from "react";
+import { FilterContext } from "./FilterContext";
 
 
-export function GenerationFilter({ generation, setGeneration, active, setActive }: {
-  generation: string;
-  setGeneration: (value: string) => void;
-  active: "min" | "exact" | "max";
-  setActive: (value: "min" | "exact" | "max") => void;
-}) {
+export function GenerationFilter() {
   const { data, isLoading } = api.generation.getGenerations.useQuery();
+  const { generation, setGeneration, generationMode, setGenerationMode } = useContext(FilterContext);
 
   return (
   <div className="flex flex-col gap-2 mb-2">
@@ -18,20 +14,20 @@ export function GenerationFilter({ generation, setGeneration, active, setActive 
         <div className="flex gap-0">
           <button
             type="button"
-            className={`px-3 py-1 border border-purple-400 text-xs font-bold rounded-l-full ${active === "min" ? "bg-green-700 text-white" : "bg-[#23214a] text-yellow-400"}`}
-            onClick={() => setActive("min")}
+            className={`px-3 py-1 border border-purple-400 text-xs font-bold rounded-l-full ${generationMode === "min" ? "bg-green-700 text-white" : "bg-[#23214a] text-yellow-400"}`}
+            onClick={() => setGenerationMode("min")}
           >MIN</button>
           <button
             type="button"
-            className={`px-3 py-1 border border-purple-400 text-xs font-bold ${active === "exact" ? "bg-green-700 text-white" : "bg-[#23214a] text-yellow-400"}`}
+            className={`px-3 py-1 border border-purple-400 text-xs font-bold ${generationMode === "exact" ? "bg-green-700 text-white" : "bg-[#23214a] text-yellow-400"}`}
             style={{ marginLeft: '-1px', borderRadius: 0 }}
-            onClick={() => setActive("exact")}
+            onClick={() => setGenerationMode("exact")}
           >EXACT</button>
           <button
             type="button"
-            className={`px-3 py-1 border border-purple-400 text-xs font-bold rounded-r-full ${active === "max" ? "bg-green-700 text-white" : "bg-[#23214a] text-yellow-400"}`}
+            className={`px-3 py-1 border border-purple-400 text-xs font-bold rounded-r-full ${generationMode === "max" ? "bg-green-700 text-white" : "bg-[#23214a] text-yellow-400"}`}
             style={{ marginLeft: '-1px' }}
-            onClick={() => setActive("max")}
+            onClick={() => setGenerationMode("max")}
           >MAX</button>
         </div>
       </div>
@@ -41,8 +37,8 @@ export function GenerationFilter({ generation, setGeneration, active, setActive 
         <>
           <select
             className="h-8 px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
-            value={generation}
-            onChange={e => setGeneration(e.target.value)}
+            value={generation ?? ""}
+            onChange={e => setGeneration(e.target.value === "" ? undefined : Number(e.target.value))}
           >
             <option value="">Todas</option>
             {data?.generation.map(gen => (
@@ -53,14 +49,14 @@ export function GenerationFilter({ generation, setGeneration, active, setActive 
             ))}
           </select>
           <div className="text-xs text-purple-200 italic" style={{ marginTop: '0px' }}>
-            {generation === "" ? (
+            {generation === undefined ? (
               "Todas las generaciones"
-            ) : active === "exact" ? (
-              `Sólo ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
-            ) : active === "min" ? (
-              `A partir de ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
+            ) : generationMode === "exact" ? (
+              `Sólo ${data?.generation.find(g => String(g.id) === String(generation))?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === String(generation))?.slug ?? generation}`
+            ) : generationMode === "min" ? (
+              `A partir de ${data?.generation.find(g => String(g.id) === String(generation))?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === String(generation))?.slug ?? generation}`
             ) : (
-              `Hasta ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
+              `Hasta ${data?.generation.find(g => String(g.id) === String(generation))?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === String(generation))?.slug ?? generation}`
             )}
           </div>
             {/* Removed Show raw JSON toggle */}
