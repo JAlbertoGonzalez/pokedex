@@ -6,7 +6,7 @@ import { gql } from 'graphql-request';
 // =============================
 // Fragmento: payload común
 // =============================
-const PokemonPayload = gql/* GraphQL */`
+export const PokemonPayload = gql/* GraphQL */`
   fragment PokemonPayload on pokemon {
     id
     name

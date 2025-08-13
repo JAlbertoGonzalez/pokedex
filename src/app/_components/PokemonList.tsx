@@ -2,10 +2,8 @@
 import { PokemonType } from "@/app/_components/PokemonType";
 import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
-import { useState } from "react";
-import { PokemonDetails } from "./PokemonDetails";
-// El tipo importado no refleja la estructura real, así que lo declaramos aquí para evitar 'any'.
-type PokemonReal = Pokemon;
+import { useRouter } from "next/navigation";
+
 
 type Props = {
   pokemons: Pokemon[];
@@ -20,52 +18,16 @@ function toRoman(num: number): string {
 }
 
 export function PokemonList({ pokemons }: Props) {
-  const [selectedPokemon, setSelectedPokemon] = useState<PokemonReal | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  // Estado para el sprite seleccionado y lista de sprites
-  const [selectedSprite, setSelectedSprite] = useState<string>("");
-  const [spriteList, setSpriteList] = useState<{ label: string; url: string }[]>([]);
-  const [showSpritesRaw, setShowSpritesRaw] = useState(false);
+  const router = useRouter();
 
-  // Función recursiva para extraer todas las URLs de sprites
-  function extractSpriteUrls(obj: object, prefix = ""): { label: string; url: string }[] {
-    let result: { label: string; url: string }[] = [];
-    if (!obj || typeof obj !== "object") return result;
-    for (const [key, value] of Object.entries(obj)) {
-      if (typeof value === "string" && value.startsWith("http")) {
-        result.push({ label: (prefix ? prefix + " > " : "") + key.replace(/_/g, " "), url: value });
-      } else if (typeof value === "object" && value !== null) {
-        result = result.concat(extractSpriteUrls(value, (prefix ? prefix + " > " : "") + key.replace(/_/g, " ")));
-      }
-    }
-    return result;
-  }
-
-  const handleRowClick = (pokemon: PokemonReal) => {
-    setSelectedPokemon(pokemon);
-    setShowModal(true);
-    // Extraer todas las URLs de sprites recursivamente
-    const spriteObj = pokemon.sprites?.[0]?.sprites;
-    const sprites = extractSpriteUrls(spriteObj);
-  setSpriteList(sprites);
-  // Buscar el sprite 'official-artwork' en la lista
-  // Buscar la opción que contenga exactamente 'other > official artwork > front default'
-  const defaultSprite = sprites.find(s => s.label.trim().toLowerCase() === 'other > official artwork > front default')?.url
-    ?? sprites.find(s => s.label.toLowerCase().includes('official artwork'))?.url
-    ?? sprites[0]?.url ?? "";
-  setSelectedSprite(defaultSprite);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedPokemon(null);
+  const handleRowClick = (pokemon: Pokemon) => {
+    router.push(`/pokemon/${pokemon.name}`);
   };
 
   // helpers para acceder a sprite, artwork y nombre
-  const getSprite = (poke: PokemonReal) => poke.sprites?.[0]?.sprites?.front_default ?? null;
-  const getArtwork = (poke: PokemonReal) => poke.sprites?.[0]?.sprites?.other?.["official-artwork"]?.front_default ?? null;
-  const getName = (poke: PokemonReal) => poke.especie?.nombre_localizado?.[0]?.name ?? poke.name;
-  const getGeneration = (poke: PokemonReal) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
+  const getSprite = (poke: Pokemon) => poke.sprites?.[0]?.sprites?.front_default ?? null;
+  const getName = (poke: Pokemon) => poke.especie?.nombre_localizado?.[0]?.name ?? poke.name;
+  const getGeneration = (poke: Pokemon) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
 
   return (
     <>
@@ -80,7 +42,7 @@ export function PokemonList({ pokemons }: Props) {
           </tr>
         </thead>
         <tbody>
-          {pokemons.map((pokemon: PokemonReal) => (
+          {pokemons.map((pokemon: Pokemon) => (
             <tr
               key={pokemon.id}
               style={{ borderBottom: "1px solid #23214a", cursor: "pointer" }}
@@ -119,51 +81,6 @@ export function PokemonList({ pokemons }: Props) {
         </tbody>
       </table>
 
-      {showModal && selectedPokemon && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-          onClick={closeModal}
-        >
-          <div
-            style={{ position: "relative" }}
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              onClick={closeModal}
-              style={{
-                position: "absolute",
-                top: 12,
-                right: 12,
-                background: "#eab308",
-                color: "#23214a",
-                border: "none",
-                borderRadius: "50%",
-                width: 32,
-                height: 32,
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontSize: 18,
-                zIndex: 10,
-              }}
-              aria-label="Cerrar"
-            >
-              ×
-            </button>
-            <PokemonDetails pokemon={selectedPokemon} pokemonsList={pokemons} />
-          </div>
-        </div>
-      )}
     </>
   );
 }
