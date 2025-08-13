@@ -1,11 +1,9 @@
 "use client";
-// import { Sidebar } from "@/app/_components/Sidebar";
 import { api } from "@/trpc/react";
 
 import { PokemonList } from "@/app/_components/PokemonList";
 import { Sidebar } from "@/app/_components/Sidebar";
-import type { PokemonGraphQL } from "@/server/schemas/getAllInfiniteGraphQL.types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   // Estado de filtros

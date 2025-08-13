@@ -41,6 +41,7 @@ export function Sidebar({
   // La búsqueda avanzada siempre estará visible, no se necesita estado
   // Estado para mostrar/ocultar el JSON raw
   // Opciones de tipos de Pokémon
+  const [active, setActive] = useState<"min" | "exact" | "max">("exact");
   const typeOptions = [
     { value: "normal", label: "Normal" },
     { value: "fire", label: "Fuego" },
@@ -86,7 +87,7 @@ export function Sidebar({
               />
             </div>
             <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
-              <GenerationFilter generation={generation} setGeneration={setGeneration} />
+              <GenerationFilter generation={generation?.toString() ?? ""} setGeneration={v => setGeneration(v === "" ? undefined : Number(v))} active={active} setActive={setActive} />
               <div className="flex items-center justify-between mb-1">
                 <label className="text-sm text-purple-300">Filtrar por tipo:</label>
                 <button

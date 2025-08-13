@@ -1,12 +1,14 @@
 import type { Generation, GetGenerationsOutput } from "@/server/schemas/getGenerations.types";
 import { api } from "@/trpc/react";
-import React, { useState } from "react";
+import React from "react";
 
 
-export function GenerationFilter() {
-  const [showRaw, setShowRaw] = useState(false);
-  const [active, setActive] = useState<"min" | "exact" | "max">("exact");
-  const [generation, setGeneration] = useState<string>("");
+export function GenerationFilter({ generation, setGeneration, active, setActive }: {
+  generation: string;
+  setGeneration: (value: string) => void;
+  active: "min" | "exact" | "max";
+  setActive: (value: "min" | "exact" | "max") => void;
+}) {
   const { data, isLoading } = api.generation.getGenerations.useQuery();
 
   return (
@@ -50,31 +52,18 @@ export function GenerationFilter() {
               </option>
             ))}
           </select>
-          <div className="mt-2 text-xs text-purple-200 italic">
+          <div className="text-xs text-purple-200 italic" style={{ marginTop: '0px' }}>
             {generation === "" ? (
               "Todas las generaciones"
             ) : active === "exact" ? (
-              `Sólo la generación ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
+              `Sólo ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
             ) : active === "min" ? (
-              `A partir de la generación ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
+              `A partir de ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
             ) : (
-              `Hasta la generación ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
+              `Hasta ${data?.generation.find(g => String(g.id) === generation)?.es?.[0]?.name ?? data?.generation.find(g => String(g.id) === generation)?.slug ?? generation}`
             )}
           </div>
-          <div className="mt-2">
-            <button
-              type="button"
-              className="text-xs text-blue-400 underline hover:text-blue-600"
-              onClick={() => setShowRaw(v => !v)}
-            >
-              {showRaw ? "Hide raw JSON" : "Show raw JSON"}
-            </button>
-            {showRaw && (
-              <pre className="mt-2 p-2 bg-[#18173a] text-xs text-purple-100 rounded overflow-x-auto" style={{ maxHeight: 300 }}>
-                {JSON.stringify(data, null, 2)}
-              </pre>
-            )}
-          </div>
+            {/* Removed Show raw JSON toggle */}
         </>
       )}
     </div>
