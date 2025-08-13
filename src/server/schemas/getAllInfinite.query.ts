@@ -26,6 +26,17 @@ const PokemonPayload = gql/* GraphQL */`
           limit: 1
         ) { name }
       }
+    } 
+    pokemonstats {
+      base_stat
+      effort
+      stat {
+        name
+        nombre_localizado: statnames(
+          where: { language: { name: { _eq: $lang } } }
+          limit: 1
+        ) { name }
+      }
     }
     especie: pokemonspecy {
       id

@@ -77,36 +77,28 @@ export function Sidebar({
           {/* Buscador */}
           <div className="mb-4 rounded-md p-2 flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible', zIndex: 50 }}>
             <div className="flex flex-col gap-2">
-          <input
-            type="text"
-            placeholder="Buscar Pokémon..."
-            className="h-10 w-full px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          {/* Búsqueda avanzada siempre visible */}
-              <button
-                type="button"
-                className="h-10 px-4 py-2 rounded bg-purple-700 text-white border border-purple-400 hover:bg-purple-800 transition mt-2"
-                onClick={handleReset}
-              >
-                Reset filtros
-              </button>
+              <input
+                type="text"
+                placeholder="Buscar Pokémon..."
+                className="h-10 w-full px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
             </div>
-  <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
-            <GenerationFilter generation={generation} setGeneration={setGeneration} />
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm text-purple-300">Filtrar por tipo:</label>
-              <button
-                type="button"
-                className={`ml-2 px-3 py-1 rounded-full border border-purple-400 bg-[#23214a] text-xs font-bold transition-colors ${typeMode === "and" ? "text-green-400" : "text-yellow-400"}`}
-                onClick={() => setTypeMode(typeMode === "and" ? "or" : "and")}
-                aria-label="Cambiar modo filtro tipo"
-                title={typeMode === "and" ? "AND (todos los tipos)" : "OR (cualquier tipo)"}
-              >
-                {typeMode === "and" ? "AND" : "OR"}
-              </button>
-            </div>
+            <div className="mt-2 p-2 rounded bg-[#23214a] border border-purple-400 flex flex-col gap-2 animate-fade-in">
+              <GenerationFilter generation={generation} setGeneration={setGeneration} />
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm text-purple-300">Filtrar por tipo:</label>
+                <button
+                  type="button"
+                  className={`ml-2 px-3 py-1 rounded-full border border-purple-400 bg-[#23214a] text-xs font-bold transition-colors ${typeMode === "and" ? "text-green-400" : "text-yellow-400"}`}
+                  onClick={() => setTypeMode(typeMode === "and" ? "or" : "and")}
+                  aria-label="Cambiar modo filtro tipo"
+                  title={typeMode === "and" ? "AND (todos los tipos)" : "OR (cualquier tipo)"}
+                >
+                  {typeMode === "and" ? "AND" : "OR"}
+                </button>
+              </div>
               <Select
                 isMulti
                 options={typeOptions}
@@ -151,9 +143,16 @@ export function Sidebar({
                   },
                 }}
               />
-            {/* El switch visual ya está incluido arriba, se elimina el select */}
+              {/* El switch visual ya está incluido arriba, se elimina el select */}
+              <button
+                type="button"
+                className="h-10 px-4 py-2 rounded bg-purple-700 text-white border border-purple-400 hover:bg-purple-800 transition mt-4"
+                onClick={handleReset}
+              >
+                Reset filtros
+              </button>
+            </div>
           </div>
-  </div>
         </div>
       </aside>
     {/* Sidebar móvil */}

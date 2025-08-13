@@ -27,6 +27,32 @@ type PokemonReal = {
     anterior?: { id: number; name: string; pokemonspeciesnames: { name: string }[] } | null;
     siguientes?: { id: number; name: string; pokemonspeciesnames: { name: string }[] }[];
   };
+  pokemonstats?: {
+    base_stat: number;
+    effort?: number;
+    stat: {
+      name: string;
+      nombre_localizado: { name: string }[];
+    };
+  }[];
+  stats_normalized?: {
+    values: {
+      hp: number;
+      attack: number;
+      defense: number;
+      special_attack: number;
+      special_defense: number;
+      speed: number;
+    };
+    labels: {
+      hp: string;
+      attack: string;
+      defense: string;
+      special_attack: string;
+      special_defense: string;
+      speed: string;
+    };
+  };
 };
 import { useState } from "react";
 import Image from "next/image";
@@ -47,6 +73,7 @@ export function PokemonList({ pokemons }: Props) {
   const [selectedPokemon, setSelectedPokemon] = useState<PokemonReal | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [showRaw, setShowRaw] = useState(false);
 
   const handleRowClick = (pokemon: PokemonReal) => {
     setSelectedPokemon(pokemon);
@@ -179,29 +206,54 @@ export function PokemonList({ pokemons }: Props) {
                 />
               )}
               <div style={{ flex: 1 }}>
-                <h2 style={{ margin: 0, fontSize: "2rem" }}>{getName(selectedPokemon)}</h2>
-                <div style={{ marginTop: 8 }}>
-                  <strong>ID:</strong> #{selectedPokemon.id.toString().padStart(3, "0")}
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Altura:</strong> {selectedPokemon.height !== undefined ? (selectedPokemon.height / 10).toFixed(2) + " m" : "-"}
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Peso:</strong> {selectedPokemon.weight !== undefined ? (selectedPokemon.weight / 10).toFixed(1) + " kg" : "-"}
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Generación:</strong> {getGeneration(selectedPokemon)}
-                  {selectedPokemon.especie?.generation?.generationnames?.[0]?.name && (
-                    <> ({selectedPokemon.especie.generation.generationnames[0].name})</>
-                  )}
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Tipos:</strong>
-                  {selectedPokemon.pokemontypes?.map((type: { slot?: number; type: { name: string; nombre_localizado?: { name: string }[]; typenames?: { name: string; language?: { name: string } }[] } }) => (
-                    <span key={type.type.name} style={{ marginLeft: 8 }}>
-                      <PokemonType typeData={type} />
-                    </span>
-                  ))}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 32 }}>
+                  <div style={{ flex: 1 }}>
+                    <h2 style={{ margin: 0, fontSize: "2rem" }}>
+                      #{selectedPokemon.id.toString().padStart(3, "0")} {getName(selectedPokemon)}
+                    </h2>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 24, marginTop: 16, alignItems: "flex-start" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ marginBottom: 8 }}><strong>Altura:</strong> {selectedPokemon.height !== undefined ? (selectedPokemon.height / 10).toFixed(2) + " m" : "-"}</div>
+                        <div style={{ marginBottom: 8 }}><strong>Peso:</strong> {selectedPokemon.weight !== undefined ? (selectedPokemon.weight / 10).toFixed(1) + " kg" : "-"}</div>
+                        <div style={{ marginBottom: 8 }}>
+                          <strong>Primera aparición:</strong> {getGeneration(selectedPokemon)}
+                          {selectedPokemon.especie?.generation?.generationnames?.[0]?.name && (
+                            <> ({selectedPokemon.especie.generation.generationnames[0].name})</>
+                          )}
+                        </div>
+                        <div style={{ marginBottom: 8 }}>
+                          <strong>Tipos:</strong>
+                          {selectedPokemon.pokemontypes?.map((type: { slot?: number; type: { name: string; nombre_localizado?: { name: string }[]; typenames?: { name: string; language?: { name: string } }[] } }) => (
+                            <span key={type.type.name} style={{ marginLeft: 8 }}>
+                              <PokemonType typeData={type} />
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      {(selectedPokemon.stats_normalized || selectedPokemon.pokemonstats) && (
+                        <div style={{ minWidth: 180, marginLeft: "auto", textAlign: "right" }}>
+                          <strong>Estadísticas base:</strong>
+                          <table style={{ width: "100%", marginTop: 4, background: "#18173a", borderRadius: 8 }}>
+                            <tbody>
+                              {selectedPokemon.stats_normalized
+                                ? Object.entries(selectedPokemon.stats_normalized.labels).map(([key, label]) => (
+                                    <tr key={key}>
+                                      <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{String(label)}</td>
+                                      <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{selectedPokemon.stats_normalized.values[key as keyof typeof selectedPokemon.stats_normalized.values]}</td>
+                                    </tr>
+                                  ))
+                                : selectedPokemon.pokemonstats?.map((stat, idx) => (
+                                    <tr key={idx}>
+                                      <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{stat.stat.nombre_localizado?.[0]?.name ?? stat.stat.name}</td>
+                                      <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{stat.base_stat}</td>
+                                    </tr>
+                                  ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div style={{ marginTop: 8 }}>
                   <strong>Descripción Pokédex:</strong>
@@ -320,6 +372,13 @@ export function PokemonList({ pokemons }: Props) {
                     </tbody>
                   </table>
                 </div>
+                {showRaw && (
+                  <div style={{ margin: "16px 0" }}>
+                    <pre style={{ background: '#18173a', color: '#eab308', padding: '12px', borderRadius: 8, fontSize: '1rem', maxHeight: 300, overflowY: 'auto' }}>
+                      {JSON.stringify(selectedPokemon, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </div>
             </div>
           </div>

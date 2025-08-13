@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 // =============================
 // Zod: esquema de validación del OUTPUT
 // =============================
@@ -13,16 +14,19 @@ export const SpriteObjectSchema = z.object({
   }).partial(),
 }).passthrough();
 
-export const SpritesSchema = z.preprocess((v) => {
-  if (typeof v === 'string') {
-    try {
-      return JSON.parse(v);
-    } catch {
-      return v; // dejar que falle abajo si no es JSON válido
+export const SpritesSchema = z.preprocess(
+  (v: unknown): unknown => {
+    if (typeof v === 'string') {
+      try {
+        return JSON.parse(v);
+      } catch {
+        return v; // dejar que falle abajo si no es JSON válido
+      }
     }
-  }
-  return v;
-}, SpriteObjectSchema);
+    return v;
+  },
+  SpriteObjectSchema
+);
 
 // Version & nombres de versión
 export const VersionNameSchema = z.object({
@@ -62,7 +66,7 @@ export const TypeSchema = z
     name: z.string(),
     // Admitimos ambos nombres de campo para compatibilidad:
     nombre_localizado: z.array(LocalizedNameSchema).optional(),
-    typenames: z.nullable(z.array(LocalizedNameSchema)).optional(),
+    typenames: z.array(LocalizedNameSchema).optional(),
   })
   .refine((o) => o.nombre_localizado !== undefined || o.typenames !== undefined, {
     message: 'Se requiere `nombre_localizado` o `typenames`',
@@ -70,6 +74,17 @@ export const TypeSchema = z
 export const PokemonTypeEdgeSchema = z.object({
   slot: z.number().int(),
   type: TypeSchema,
+});
+
+// Stats (nombre localizado y valor base)
+const StatSchema = z.object({
+  name: z.string(),
+  nombre_localizado: z.array(LocalizedNameSchema),
+});
+const PokemonStatSchema = z.object({
+  base_stat: z.number().int(),
+  effort: z.number().int().nullish(),
+  stat: StatSchema,
 });
 
 // Especie principal
@@ -91,6 +106,7 @@ export const PokemonSchema = z.object({
   weight: z.number().int().nullish(),
   sprites: z.array(z.object({ sprites: SpritesSchema })),
   pokemontypes: z.array(PokemonTypeEdgeSchema),
+  pokemonstats: z.array(PokemonStatSchema),
   especie: SpeciesSchema,
 });
 
@@ -100,4 +116,81 @@ export const getAllInfiniteOutputSchema = z.object({
 });
 
 export type GetAllInfiniteOutput = z.infer<typeof getAllInfiniteOutputSchema>;
+
+// =============================
+// Normalización de stats (HP, Atk, Def, SpA, SpD, Spe)
+// =============================
+export type Pokemon = z.infer<typeof PokemonSchema>;
+export type PokemonStat = z.infer<typeof PokemonStatSchema>;
+
+type StatApiName = 'hp' | 'attack' | 'defense' | 'special-attack' | 'special-defense' | 'speed';
+type StatKey = 'hp' | 'attack' | 'defense' | 'special_attack' | 'special_defense' | 'speed';
+
+const NAME_TO_KEY: Record<StatApiName, StatKey> = {
+  hp: 'hp',
+  attack: 'attack',
+  defense: 'defense',
+  'special-attack': 'special_attack',
+  'special-defense': 'special_defense',
+  speed: 'speed',
+};
+
+export interface NormalizedStatsValues {
+  hp: number; attack: number; defense: number; special_attack: number; special_defense: number; speed: number;
+}
+export interface NormalizedStatsLabels {
+  hp: string; attack: string; defense: string; special_attack: string; special_defense: string; speed: string;
+}
+export interface NormalizedStats { values: NormalizedStatsValues; labels: NormalizedStatsLabels; }
+
+const ZERO_VALUES: NormalizedStatsValues = { hp: 0, attack: 0, defense: 0, special_attack: 0, special_defense: 0, speed: 0 };
+const EMPTY_LABELS: NormalizedStatsLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', special_attack: 'Sp. Atk', special_defense: 'Sp. Def', speed: 'Speed' };
+
+export function normalizePokemonStats(stats: PokemonStat[]): NormalizedStats {
+  const values: NormalizedStatsValues = { ...ZERO_VALUES };
+  const labels: NormalizedStatsLabels = { ...EMPTY_LABELS };
+
+  for (const s of stats) {
+    const apiName = s.stat.name as StatApiName;
+    const key = NAME_TO_KEY[apiName];
+    if (!key) continue;
+    values[key] = s.base_stat ?? 0;
+    const loc = s.stat.nombre_localizado?.[0]?.name;
+    if (loc) {
+      labels[key] = loc;
+    } else {
+      // fallback razonable desde el apiName
+      switch (apiName) {
+        case 'hp': labels.hp = 'HP'; break;
+        case 'attack': labels.attack = 'Attack'; break;
+        case 'defense': labels.defense = 'Defense'; break;
+        case 'special-attack': labels.special_attack = 'Sp. Atk'; break;
+        case 'special-defense': labels.special_defense = 'Sp. Def'; break;
+        case 'speed': labels.speed = 'Speed'; break;
+      }
+    }
+  }
+  return { values, labels };
+}
+
+export function attachNormalizedStats<T extends Pokemon>(pkm: T): T & { stats_normalized: NormalizedStats } {
+  const stats_normalized = normalizePokemonStats(pkm.pokemonstats);
+  return { ...pkm, stats_normalized };
+}
+
+// =============================
+// Zod: versión con transform que añade `stats_normalized`
+// =============================
+export const PokemonSchemaWithNormalized = PokemonSchema.transform(
+  (pkm): z.infer<typeof PokemonSchema> & { stats_normalized: NormalizedStats } => ({
+    ...pkm,
+    stats_normalized: normalizePokemonStats(pkm.pokemonstats),
+  })
+);
+
+export const getAllInfiniteOutputSchemaNormalized = z.object({
+  pokemon: z.array(PokemonSchemaWithNormalized),
+});
+
+export type GetAllInfiniteOutputNormalized = z.infer<typeof getAllInfiniteOutputSchemaNormalized>;
 
