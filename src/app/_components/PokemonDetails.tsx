@@ -3,21 +3,19 @@
 import { PokemonType } from "@/app/_components/PokemonType";
 import { extractSpriteUrls } from "@/app/_components/utils/extractSpriteUrls";
 import { toRoman } from "@/app/_components/utils/toRoman";
-import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import { normalizePokemonStats } from "@/server/schemas/getAllInfinite.output";
+import { type getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import Image from "next/image";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { type z } from "zod";
 
+type Pokemon = z.infer<typeof getPokemonBySlugOutput>['pokemon'][0];
 
 
 interface Props {
-  pokemon: Pokemon;
+  pokemon: Pokemon
 }
-
-
-
-
 
 export const PokemonDetails: React.FC<Props> = ({ pokemon }) => {
   const router = useRouter();

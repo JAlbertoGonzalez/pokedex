@@ -1,7 +1,11 @@
 "use client";
 import { PokemonDetails } from "@/app/_components/PokemonDetails";
+import type { getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import { type z } from "zod";
+
+type Pokemon = z.infer<typeof getPokemonBySlugOutput>['pokemon'][0];
 
 export default function PokemonSlugPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
@@ -19,7 +23,7 @@ export default function PokemonSlugPage({ params }: { params: { slug: string } }
   if (!data?.pokemon?.length) {
     return <div className="text-gray-500">No se encontró el Pokémon con slug: {slug}</div>;
   }
-  const pokemon = data.pokemon[0];
+  const pokemon = data.pokemon[0] as unknown as Pokemon;
 
   return (
     <main style={{ padding: "2rem" }}>
