@@ -3,29 +3,35 @@ import { api } from "@/trpc/react";
 
 import { PokemonList } from "@/app/_components/PokemonList";
 import { Sidebar } from "@/app/_components/Sidebar";
-import { useEffect, useState } from "react";
+import { useContext, useMemo } from "react";
+import { FilterContext } from "@/app/_components/FilterContext";
 
 export default function Home() {
-  // Estado de filtros
-  const [search, setSearch] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [typeMode, setTypeMode] = useState<"and" | "or">("and");
-  const [generation, setGeneration] = useState<number | undefined>(undefined);
-  const [searchDebounced, setSearchDebounced] = useState("");
-  useEffect(() => {
-    const handler = setTimeout(() => setSearchDebounced(search), 400);
-    return () => clearTimeout(handler);
-  }, [search]);
+  const filter = useContext(FilterContext);
+  const {
+    search,
+    selectedTypes,
+    typeMode,
+    generation,
+    languageCode,
+    generationMode,
+  } = filter;
 
-  // Query de pokémon con nuevos parámetros
-  const [offset, setOffset] = useState(0);
+  // Adaptar los filtros al formato esperado por la API
   const limit = 20;
-  const generationIds = generation ? [generation] : [1,2,3,4,5,6,7,8,9];
-  const lang = "es";
+  const offset = 0;
+  const generationIds = useMemo(() => {
+    const allGens = [1,2,3,4,5,6,7,8,9];
+    if (!generation) return allGens;
+    if (generationMode === "exact") return [generation];
+    if (generationMode === "min") return allGens.filter(g => g >= generation);
+    if (generationMode === "max") return allGens.filter(g => g <= generation);
+    return allGens;
+  }, [generation, generationMode]);
+  const lang = languageCode;
   const mode = typeMode === "and" ? "AND" : "OR";
-  const nameRegex = searchDebounced.length > 0 ? searchDebounced : ".*";
+  const nameRegex = search.length > 0 ? search : ".*";
 
-  // Llamada a la API que obtiene los Pokémon aplicando los filtros activos: búsqueda, tipos, generación y modo
   const { data, isLoading, error } = api.pokemon.getAllInfiniteScroll.useQuery({
     limit,
     offset,
