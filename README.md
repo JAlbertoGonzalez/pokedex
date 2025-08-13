@@ -1,3 +1,10 @@
+# 🚀 DEMO EN PRODUCCIÓN: [https://pokedex.sinapsy.es/](https://pokedex.sinapsy.es/)
+
+> Puedes ver la Pokédex funcionando en producción en el siguiente enlace:
+> **https://pokedex.sinapsy.es/**
+
+---
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
@@ -27,3 +34,41 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+# Pokédex T3 - Resumen de funcionalidades
+
+Este proyecto implementa una Pokédex moderna usando Next.js, tRPC, Prisma y React Context, con paginación infinita, cache, rate limiting y UX avanzada.
+
+## Backend/API
+
+- **tRPC**: Endpoints para obtener Pokémon por filtros y por slug, con tipado estricto usando Zod.
+- **Cache en disco**: Resultados de búsqueda y detalles individuales cacheados usando claves md5.
+- **Rate Limiting**: Protección contra abuso con `next-rate-limit`.
+- **Schemas Zod**: Validación y tipado de todos los datos de entrada/salida.
+
+## Frontend/React
+
+- **Contexto global de filtros**: `FilterContext` y `FilterProvider` gestionan filtros, resultados, paginación, scroll y estado de carga/error.
+- **Paginación infinita**: Método `loadMore` para cargar más resultados y controlar `hasMoreResults`.
+- **Scroll persistente**: Guarda y restaura la posición de scroll al navegar o cambiar filtros.
+- **Reset de filtros**: Limpia resultados, paginación y scroll.
+- **Componentes reutilizables**: Filtros por generación, tipo, idioma, búsqueda por texto, lista y detalles de Pokémon.
+
+## Integración y UX
+
+- **Acumulación de resultados**: Solo al paginar, nunca al cambiar filtros.
+- **Deshabilitar paginación**: Botón "Cargar más" deshabilitado y mensaje cuando no hay más resultados.
+- **Actualización reactiva**: Cambios de filtros, paginación y scroll se reflejan automáticamente en la UI.
+
+## Configuración y herramientas
+
+- **Linting y formateo**: ESLint y Prettier configurados.
+- **Tipado estricto**: TypeScript en todo el proyecto.
+- **Next.js**: SSR/ISR listo para producción.
+- **Prisma**: ORM para acceso a base de datos y migraciones.
+
+---
+
+¿Quieres ver ejemplos de uso o detalles de algún componente/archivo específico?
+
+# Documentación original T3
