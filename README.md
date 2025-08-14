@@ -1,8 +1,36 @@
-# 🚀 DEMO EN PRODUCCIÓN: [https://pokedex.sinapsy.es/](https://pokedex.sinapsy.es/)
+# 🚀 DEMO [aquí](https://pokedex.sinapsy.es/)
+---
 
-> Puedes ver la Pokédex funcionando en producción en el siguiente enlace:
-> **https://pokedex.sinapsy.es/**
+# Local Development
 
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/JAlbertoGonzalez/pokedex.git
+   cd pokedex
+   ```
+
+2. **Install dependencies:**
+   ```sh
+   yarn install
+   ```
+
+3. **Configure environment variables:**
+   - Copy `.env.example` to `.env` and adjust variables if needed.
+   - By default, the database is SQLite (`DATABASE_URL="file:./db.sqlite"`).
+
+4. **Start the development server:**
+   ```sh
+   yarn dev
+   ```
+   Visit [http://localhost:3000](http://localhost:3000)
+
+5. **Start in production:**
+   ```sh
+   yarn build
+   PORT=4000 yarn start
+   # Or with pm2:
+   PORT=4000 pm2 start yarn --name pokedex -- start
+   ```
 ---
 
 # Create T3 App
@@ -66,9 +94,3 @@ Este proyecto implementa una Pokédex moderna usando Next.js, tRPC, Prisma y Rea
 - **Tipado estricto**: TypeScript en todo el proyecto.
 - **Next.js**: SSR/ISR listo para producción.
 - **Prisma**: ORM para acceso a base de datos y migraciones.
-
----
-
-¿Quieres ver ejemplos de uso o detalles de algún componente/archivo específico?
-
-# Documentación original T3
