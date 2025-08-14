@@ -23,3 +23,11 @@ model Type {
   pokemons1 Pokemon[] @relation("PrimaryType")
   pokemons2 Pokemon[] @relation("SecondaryType")
 }
+
+model CacheEntry {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
