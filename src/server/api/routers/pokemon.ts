@@ -6,7 +6,8 @@ import { getPokemonBySlugInput } from "@/server/schemas/getPokemonBySlug.input";
 import { getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import { PokemonBySlug } from "@/server/schemas/getPokemonBySlug.query";
 import type { infer as InferType } from 'zod';
-import { getCache, setCache } from "./file-cache";
+import { getPokemonCache, getSearchCache, setPokemonCache, setSearchCache } from "./file-cache";
+
 type GetAllInfiniteOutput = InferType<typeof getAllInfiniteOutputSchema>;
 type PokemonType = GetAllInfiniteOutput['pokemon'][number];
 
@@ -17,9 +18,12 @@ export const pokemonRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       // Clave de cache basada en los filtros
       const cacheKey = JSON.stringify(input);
-      const cachedArray = getCache<GetAllInfiniteOutput>(cacheKey);
+      const cachedArray = getSearchCache<GetAllInfiniteOutput>(cacheKey);
+      const isValidCache = getAllInfiniteOutputSchema.safeParse(cachedArray);
       if (cachedArray && Array.isArray(cachedArray.pokemon)) {
-        return cachedArray;
+        if (isValidCache.success) {
+            return cachedArray;
+        }
       }
       const {
         limit,
@@ -43,9 +47,9 @@ export const pokemonRouter = createTRPCRouter({
       const parsed = getAllInfiniteOutputSchema.parse(rawData);
       // Cachear cada Pokémon individualmente por name
       if (Array.isArray(parsed.pokemon)) {
-        setCache(cacheKey, parsed);
+        setSearchCache(cacheKey, parsed);
         parsed.pokemon.forEach((pokemon) => {
-          setCache(pokemon.name, pokemon);
+          setPokemonCache(pokemon.name, pokemon);
         });
       }
       return parsed;
@@ -56,7 +60,7 @@ export const pokemonRouter = createTRPCRouter({
     .output(getPokemonBySlugOutput)
     .query(async ({ input, ctx }) => {
       const slug = input.slug;
-      const cachedPokemon = getCache<PokemonType>(slug);
+      const cachedPokemon = getPokemonCache<PokemonType>(slug);
       if (cachedPokemon) {
         return { pokemon: [cachedPokemon] };
       }
@@ -66,7 +70,7 @@ export const pokemonRouter = createTRPCRouter({
       if (Array.isArray(parsed.pokemon) && parsed.pokemon.length > 0) {
         const valid = parsed.pokemon.find(p => p && typeof p.id === 'number' && typeof p.name === 'string');
         if (valid) {
-          setCache(slug, valid);
+          setPokemonCache(slug, valid);
           return { pokemon: [valid] };
         }
       }
