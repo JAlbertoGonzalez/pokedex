@@ -12,29 +12,31 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar escritorio */}
-        <aside className="w-[24rem] h-screen bg-gradient-to-b from-[#1a1833] to-[#23214a] p-6 flex-shrink-0 hidden md:block rounded-xl shadow-xl box-border overflow-x-hidden border-r-2 border-purple-900">
-          <div className="h-full flex flex-col gap-6 justify-between">
-            {/* Buscador */}
-            <div className="rounded-lg p-4 bg-[#23214a] border border-purple-700 shadow-md flex flex-col gap-4">
-              <h2 className="text-xl font-bold text-purple-300 mb-2 tracking-wide">Filtros</h2>
-              <TextSearch />
-              <hr className="my-3 border-purple-700 opacity-40" />
-              <GenerationFilter />
-              <hr className="my-3 border-purple-700 opacity-40" />
-              <TypeFilter />
-              <button
-                type="button"
-                className="h-10 px-4 py-2 rounded bg-gradient-to-r from-purple-700 to-purple-500 text-white border border-purple-400 hover:bg-purple-800 transition mt-4 font-bold shadow"
-                onClick={filters.resetFilters}
-              >
-                Resetear filtros
-              </button>
-            </div>
-            <div className="mt-auto text-xs text-purple-400 text-center opacity-70 py-2">
-              <span>Pokédex T3 &mdash; {new Date().getFullYear()}</span>
-            </div>
+      <aside className="box-border hidden h-screen w-[24rem] flex-shrink-0 overflow-x-hidden rounded-xl border-r-2 border-purple-900 bg-gradient-to-b from-[#1a1833] to-[#23214a] p-6 shadow-xl md:block">
+        <div className="flex h-full flex-col justify-between gap-6">
+          {/* Buscador */}
+          <div className="flex flex-col gap-4 rounded-lg border border-purple-700 bg-[#23214a] p-4 shadow-md">
+            <h2 className="mb-2 text-xl font-bold tracking-wide text-purple-300">
+              Filtros
+            </h2>
+            <TextSearch />
+            <hr className="my-3 border-purple-700 opacity-40" />
+            <GenerationFilter />
+            <hr className="my-3 border-purple-700 opacity-40" />
+            <TypeFilter />
+            <button
+              type="button"
+              className="mt-4 h-10 rounded border border-purple-400 bg-gradient-to-r from-purple-700 to-purple-500 px-4 py-2 font-bold text-white shadow transition hover:bg-purple-800"
+              onClick={filters.resetFilters}
+            >
+              Resetear filtros
+            </button>
           </div>
-        </aside>
+          <div className="mt-auto py-2 text-center text-xs text-purple-400 opacity-70">
+            <span>Pokédex T3 &mdash; {new Date().getFullYear()}</span>
+          </div>
+        </div>
+      </aside>
     </>
   );
 }

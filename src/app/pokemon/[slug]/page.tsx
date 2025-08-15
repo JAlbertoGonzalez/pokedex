@@ -6,21 +6,33 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { type z } from "zod";
 
-type Pokemon = z.infer<typeof getPokemonBySlugOutput>['pokemon'][0];
+type Pokemon = z.infer<typeof getPokemonBySlugOutput>["pokemon"][0];
 
-export default function PokemonSlugPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function PokemonSlugPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const router = useRouter();
   const { slug } = React.use(params);
-  const { data, isLoading, error } = api.pokemon.getPokemonBySlug.useQuery({ slug });
+  const { data, isLoading, error } = api.pokemon.getPokemonBySlug.useQuery({
+    slug,
+  });
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-32">Cargando...</div>;
+    return (
+      <div className="flex h-32 items-center justify-center">Cargando...</div>
+    );
   }
   if (error) {
     return <div className="text-red-500">Error: {error.message}</div>;
   }
   if (!data?.pokemon?.length) {
-    return <div className="text-gray-500">No se encontró el Pokémon con slug: {slug}</div>;
+    return (
+      <div className="text-gray-500">
+        No se encontró el Pokémon con slug: {slug}
+      </div>
+    );
   }
   const pokemon = data.pokemon[0] as unknown as Pokemon;
 
@@ -37,7 +49,7 @@ export default function PokemonSlugPage({ params }: { params: Promise<{ slug: st
             borderRadius: "8px",
             fontWeight: "bold",
             cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         >
           ← Volver atrás
@@ -52,13 +64,13 @@ export default function PokemonSlugPage({ params }: { params: Promise<{ slug: st
             borderRadius: "8px",
             fontWeight: "bold",
             cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         >
           Home
         </button>
       </div>
-   <PokemonDetails pokemon={pokemon} />
+      <PokemonDetails pokemon={pokemon} />
     </main>
   );
 }

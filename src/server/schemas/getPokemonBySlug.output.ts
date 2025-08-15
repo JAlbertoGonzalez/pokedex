@@ -1,4 +1,3 @@
-
 import { getAllInfiniteOutputSchema } from "./getAllInfinite.output";
 
 export const getPokemonBySlugOutput = getAllInfiniteOutputSchema;

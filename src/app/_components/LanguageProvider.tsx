@@ -1,11 +1,18 @@
-import React, { createContext, useContext, useState, type ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  type ReactNode,
+} from "react";
 
 type LanguageContextProps = {
   languageCode: string;
   setLanguageCode: (code: string) => void;
 };
 
-const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextProps | undefined>(
+  undefined,
+);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   // Por defecto español ('es')

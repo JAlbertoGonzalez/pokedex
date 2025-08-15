@@ -6,16 +6,21 @@ export const LanguageDropdown = () => {
   const { languageCode, setLanguageCode } = useLanguage();
   const { data, isLoading, error } = api.language.getLanguages.useQuery();
 
-
   const optionsByCurrentLanguage = useMemo(() => {
-    const idToCode: Record<string, string> = { "1": "en", "7": "es", "9": "ja" };
+    const idToCode: Record<string, string> = {
+      "1": "en",
+      "7": "es",
+      "9": "ja",
+    };
     if (!data) return [];
-    return data.language.map(lang => {
+    return data.language.map((lang) => {
       // Busca el nombre de este idioma en el idioma actualmente seleccionado
-      const nameObj = lang.languagenames.find(name => idToCode[String(name.local_language_id)] === languageCode);
+      const nameObj = lang.languagenames.find(
+        (name) => idToCode[String(name.local_language_id)] === languageCode,
+      );
       return {
         value: idToCode[String(lang.id)],
-        label: nameObj ? nameObj.name : lang.name
+        label: nameObj ? nameObj.name : lang.name,
       };
     });
   }, [data, languageCode]);
@@ -29,12 +34,12 @@ export const LanguageDropdown = () => {
       ) : (
         <select
           id="language-select"
-          className="h-8 px-2 py-1 rounded border border-purple-400 bg-[#23214a] text-white"
+          className="h-8 rounded border border-purple-400 bg-[#23214a] px-2 py-1 text-white"
           value={languageCode}
-          onChange={e => setLanguageCode(e.target.value)}
+          onChange={(e) => setLanguageCode(e.target.value)}
         >
           <option value="">Selecciona un idioma</option>
-          {optionsByCurrentLanguage.map(option => {
+          {optionsByCurrentLanguage.map((option) => {
             return (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -46,4 +51,3 @@ export const LanguageDropdown = () => {
     </div>
   );
 };
-

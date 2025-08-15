@@ -11,6 +11,6 @@ export const getGenerationsOutput = z.object({
         slug: z.string(), // alias de name
         en: z.array(z.object({ name: z.string() })).default([]), // regionnames (limit:1)
       }),
-    })
+    }),
   ),
 });

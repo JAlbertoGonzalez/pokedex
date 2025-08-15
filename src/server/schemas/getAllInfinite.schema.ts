@@ -9,17 +9,24 @@ export const getAllInfiniteInputSchema = z.object({
 });
 
 export const getAllInfiniteOutputSchema = z.object({
-  pokemons: z.array(z.object({
-    id: z.number(),
-    name: z.string(),
-    sprite: z.object({
-      front_default: z.string().nullable().optional(),
-      versions: z.any().optional()
-    }).nullable().optional(),
-    types: z.array(z.object({
+  pokemons: z.array(
+    z.object({
+      id: z.number(),
       name: z.string(),
-      language: z.string()
-    }))
-  })),
+      sprite: z
+        .object({
+          front_default: z.string().nullable().optional(),
+          versions: z.any().optional(),
+        })
+        .nullable()
+        .optional(),
+      types: z.array(
+        z.object({
+          name: z.string(),
+          language: z.string(),
+        }),
+      ),
+    }),
+  ),
   nextCursor: z.number().min(1).optional(),
 });

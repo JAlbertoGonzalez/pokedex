@@ -11,5 +11,5 @@ export const generationRouter = createTRPCRouter({
       const raw = await ctx.graphql.request(getGenerationsQuery);
       const data = getGenerationsOutput.parse(raw);
       return data;
-    })
+    }),
 });

@@ -10,12 +10,16 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import Axios, { type AxiosInstance } from 'axios';
+import Axios, { type AxiosInstance } from "axios";
 
 import { db } from "@/server/db";
 import type { PrismaClient } from "@prisma/client";
-import { buildStorage, setupCache, type StorageValue } from "axios-cache-interceptor";
-import fs from 'fs';
+import {
+  buildStorage,
+  setupCache,
+  type StorageValue,
+} from "axios-cache-interceptor";
+import fs from "fs";
 import { GraphQLClient } from "graphql-request";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
@@ -23,25 +27,25 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
  * Axios Cache Interceptor
  */
 
-const CACHE_DIR = './cache';
+const CACHE_DIR = "./cache";
 if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 }
 
-const instance = Axios.create()
+const instance = Axios.create();
 const axios = setupCache(instance, {
   ttl: 60 * 60 * 24, // 1 day
   storage: buildStorage({
     async find(key, _currentRequest) {
       const cacheFile = `${CACHE_DIR}/${key}.json`;
       if (!fs.existsSync(cacheFile)) {
-        console.log('MISSING', _currentRequest)
+        console.log("MISSING", _currentRequest);
         return undefined;
       }
-      const result = fs.readFileSync(cacheFile, 'utf-8');
+      const result = fs.readFileSync(cacheFile, "utf-8");
       return JSON.parse(result) as StorageValue;
     },
-    async set (key, value) {
+    async set(key, value) {
       const cacheFile = `${CACHE_DIR}/${key}.json`;
       fs.writeFileSync(cacheFile, JSON.stringify(value));
     },
@@ -49,9 +53,8 @@ const axios = setupCache(instance, {
       // Won't remove cache
       // fs.unlinkSync(`${CACHE_DIR}/${key}.json`);
     },
-
-  })
-})
+  }),
+});
 
 /**
  * GraphQL Queries
@@ -77,9 +80,14 @@ export const createTRPCContext = (opts: { headers: Headers }) => {
     axios,
     graphql: graphqlClient,
     ...opts,
-  }
-}
-export type TRPCContext = { db: PrismaClient; headers: Headers; axios: AxiosInstance; graphql: GraphQLClient };
+  };
+};
+export type TRPCContext = {
+  db: PrismaClient;
+  headers: Headers;
+  axios: AxiosInstance;
+  graphql: GraphQLClient;
+};
 
 /**
  * 2. INITIALIZATION
@@ -146,20 +154,19 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
-
 /**
  * Rate limiter middleware
  * This middleware limits the number of requests a user can make to the API.
  * Will protect us from abuse, and protect us from third-party API abuse.
  */
 const limiter = new RateLimiterMemory({
-  points: 50,       // máx 50 peticiones
-  duration: 60,     // por 60 segundos
-  blockDuration: 30 // opcional: 30s bloque tras agotar puntos
+  points: 50, // máx 50 peticiones
+  duration: 60, // por 60 segundos
+  blockDuration: 30, // opcional: 30s bloque tras agotar puntos
 });
 
 export const rateLimiter = t.middleware(async ({ ctx, path, next }) => {
-  const h = ctx.headers; 
+  const h = ctx.headers;
 
   const fwdFor = h.get("x-vercel-forwarded-for") ?? h.get("x-forwarded-for");
   const ip =
@@ -178,7 +185,6 @@ export const rateLimiter = t.middleware(async ({ ctx, path, next }) => {
   return next();
 });
 
-
 /**
  * Public (unauthenticated) procedure
  *
@@ -187,5 +193,5 @@ export const rateLimiter = t.middleware(async ({ ctx, path, next }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure
-.use(rateLimiter) 
-.use(timingMiddleware);
+  .use(rateLimiter)
+  .use(timingMiddleware);

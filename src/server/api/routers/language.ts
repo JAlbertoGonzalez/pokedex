@@ -16,28 +16,40 @@ export type GetLanguagesOutput = {
 export const languageRouter = createTRPCRouter({
   getLanguages: publicProcedure
     .input(z.void())
-    .output(z.object({
-      language: z.array(z.object({
-        id: z.number(),
-        name: z.string(),
-        languagenames: z.array(z.object({
-          local_language_id: z.number(),
-          name: z.string(),
-        })),
-      })),
-    }))
+    .output(
+      z.object({
+        language: z.array(
+          z.object({
+            id: z.number(),
+            name: z.string(),
+            languagenames: z.array(
+              z.object({
+                local_language_id: z.number(),
+                name: z.string(),
+              }),
+            ),
+          }),
+        ),
+      }),
+    )
     .query(async ({ ctx }) => {
       const raw = await ctx.graphql.request(getLanguagesQuery);
-      const data = z.object({
-        language: z.array(z.object({
-          id: z.number(),
-          name: z.string(),
-          languagenames: z.array(z.object({
-            local_language_id: z.number(),
-            name: z.string(),
-          })),
-        })),
-      }).parse(raw);
+      const data = z
+        .object({
+          language: z.array(
+            z.object({
+              id: z.number(),
+              name: z.string(),
+              languagenames: z.array(
+                z.object({
+                  local_language_id: z.number(),
+                  name: z.string(),
+                }),
+              ),
+            }),
+          ),
+        })
+        .parse(raw);
       return data;
-    })
+    }),
 });

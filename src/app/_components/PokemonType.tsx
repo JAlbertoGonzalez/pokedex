@@ -32,24 +32,31 @@ type TypeData = {
 
 export function PokemonType({ typeData }: { typeData: TypeData }) {
   const typeName = typeData.type.name;
-  const color = POKEMON_TYPE_COLORS.find(t => t.type === typeName)?.color;
+  const color = POKEMON_TYPE_COLORS.find((t) => t.type === typeName)?.color;
 
   // Mostrar el primer nombre localizado disponible
   let displayName = typeName;
-  if (Array.isArray(typeData.type.nombre_localizado) && typeData.type.nombre_localizado?.[0]?.name) {
+  if (
+    Array.isArray(typeData.type.nombre_localizado) &&
+    typeData.type.nombre_localizado?.[0]?.name
+  ) {
     displayName = typeData.type.nombre_localizado[0].name;
-  } else if (Array.isArray(typeData.type.typenames) && typeData.type.typenames?.[0]?.name) {
+  } else if (
+    Array.isArray(typeData.type.typenames) &&
+    typeData.type.typenames?.[0]?.name
+  ) {
     displayName = typeData.type.typenames[0].name;
   }
 
   return (
     <span
-      className="text-xs text-white border border-white rounded-xl px-2 py-1 m-1"
-      style={{ background: color, textShadow: "0 1px 2px #000, 0 0px 8px #000" }}
+      className="m-1 rounded-xl border border-white px-2 py-1 text-xs text-white"
+      style={{
+        background: color,
+        textShadow: "0 1px 2px #000, 0 0px 8px #000",
+      }}
     >
       {displayName}
     </span>
   );
 }
-
-

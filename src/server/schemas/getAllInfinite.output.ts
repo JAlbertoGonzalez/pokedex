@@ -11,7 +11,7 @@ export const SpriteObjectSchema = z
     front_default: z.string().url().nullish(),
     other: z
       .object({
-        'official-artwork': z
+        "official-artwork": z
           .object({
             front_default: z.string().url().nullish(),
           })
@@ -21,19 +21,16 @@ export const SpriteObjectSchema = z
   })
   .passthrough();
 
-export const SpritesSchema = z.preprocess(
-  (v: unknown): unknown => {
-    if (typeof v === 'string') {
-      try {
-        return JSON.parse(v);
-      } catch {
-        return v; // dejar que falle abajo si no es JSON válido
-      }
+export const SpritesSchema = z.preprocess((v: unknown): unknown => {
+  if (typeof v === "string") {
+    try {
+      return JSON.parse(v);
+    } catch {
+      return v; // dejar que falle abajo si no es JSON válido
     }
-    return v;
-  },
-  SpriteObjectSchema
-);
+  }
+  return v;
+}, SpriteObjectSchema);
 
 // Version & nombres de versión
 export const VersionNameSchema = z.object({
@@ -105,10 +102,12 @@ const EvolutionDetailBaseSchema = z
   // Permitimos campos extra por compatibilidad con pequeñas diferencias del schema
   .passthrough();
 
-export const EvolutionDetailSchema = EvolutionDetailBaseSchema.transform((e) => {
-  const { evolutiontrigger, trigger, ...rest } = e;
-  return { ...rest, trigger: trigger ?? evolutiontrigger };
-});
+export const EvolutionDetailSchema = EvolutionDetailBaseSchema.transform(
+  (e) => {
+    const { evolutiontrigger, trigger, ...rest } = e;
+    return { ...rest, trigger: trigger ?? evolutiontrigger };
+  },
+);
 
 // =============================
 // Referencia mínima a Pokémon (para sprites de cadena/anterior/siguientes)
@@ -149,9 +148,12 @@ export const TypeSchema = z
     nombre_localizado: z.array(LocalizedNameSchema).optional(),
     typenames: z.array(LocalizedNameSchema).optional(),
   })
-  .refine((o) => o.nombre_localizado !== undefined || o.typenames !== undefined, {
-    message: 'Se requiere `nombre_localizado` o `typenames`',
-  });
+  .refine(
+    (o) => o.nombre_localizado !== undefined || o.typenames !== undefined,
+    {
+      message: "Se requiere `nombre_localizado` o `typenames`",
+    },
+  );
 export const PokemonTypeEdgeSchema = z.object({
   slot: z.number().int(),
   type: TypeSchema,
@@ -215,27 +217,27 @@ export type Pokemon = z.infer<typeof PokemonSchema>;
 export type PokemonStat = z.infer<typeof PokemonStatSchema>;
 
 type StatApiName =
-  | 'hp'
-  | 'attack'
-  | 'defense'
-  | 'special-attack'
-  | 'special-defense'
-  | 'speed';
+  | "hp"
+  | "attack"
+  | "defense"
+  | "special-attack"
+  | "special-defense"
+  | "speed";
 type StatKey =
-  | 'hp'
-  | 'attack'
-  | 'defense'
-  | 'special_attack'
-  | 'special_defense'
-  | 'speed';
+  | "hp"
+  | "attack"
+  | "defense"
+  | "special_attack"
+  | "special_defense"
+  | "speed";
 
 const NAME_TO_KEY: Record<StatApiName, StatKey> = {
-  hp: 'hp',
-  attack: 'attack',
-  defense: 'defense',
-  'special-attack': 'special_attack',
-  'special-defense': 'special_defense',
-  speed: 'speed',
+  hp: "hp",
+  attack: "attack",
+  defense: "defense",
+  "special-attack": "special_attack",
+  "special-defense": "special_defense",
+  speed: "speed",
 };
 
 export interface NormalizedStatsValues {
@@ -268,12 +270,12 @@ const ZERO_VALUES: NormalizedStatsValues = {
   speed: 0,
 };
 const EMPTY_LABELS: NormalizedStatsLabels = {
-  hp: 'HP',
-  attack: 'Attack',
-  defense: 'Defense',
-  special_attack: 'Sp. Atk',
-  special_defense: 'Sp. Def',
-  speed: 'Speed',
+  hp: "HP",
+  attack: "Attack",
+  defense: "Defense",
+  special_attack: "Sp. Atk",
+  special_defense: "Sp. Def",
+  speed: "Speed",
 };
 
 export function normalizePokemonStats(stats: PokemonStat[]): NormalizedStats {
@@ -293,23 +295,23 @@ export function normalizePokemonStats(stats: PokemonStat[]): NormalizedStats {
     } else {
       // fallback razonable desde el apiName
       switch (apiName) {
-        case 'hp':
-          labels.hp = 'HP';
+        case "hp":
+          labels.hp = "HP";
           break;
-        case 'attack':
-          labels.attack = 'Attack';
+        case "attack":
+          labels.attack = "Attack";
           break;
-        case 'defense':
-          labels.defense = 'Defense';
+        case "defense":
+          labels.defense = "Defense";
           break;
-        case 'special-attack':
-          labels.special_attack = 'Sp. Atk';
+        case "special-attack":
+          labels.special_attack = "Sp. Atk";
           break;
-        case 'special-defense':
-          labels.special_defense = 'Sp. Def';
+        case "special-defense":
+          labels.special_defense = "Sp. Def";
           break;
-        case 'speed':
-          labels.speed = 'Speed';
+        case "speed":
+          labels.speed = "Speed";
           break;
       }
     }
@@ -319,7 +321,7 @@ export function normalizePokemonStats(stats: PokemonStat[]): NormalizedStats {
 }
 
 export function attachNormalizedStats<T extends Pokemon>(
-  pkm: T
+  pkm: T,
 ): T & { stats_normalized: NormalizedStats } {
   const stats_normalized = normalizePokemonStats(pkm.pokemonstats);
   return { ...pkm, stats_normalized };
@@ -330,11 +332,11 @@ export function attachNormalizedStats<T extends Pokemon>(
 // =============================
 export const PokemonSchemaWithNormalized = PokemonSchema.transform(
   (
-    pkm
+    pkm,
   ): z.infer<typeof PokemonSchema> & { stats_normalized: NormalizedStats } => ({
     ...pkm,
     stats_normalized: normalizePokemonStats(pkm.pokemonstats),
-  })
+  }),
 );
 
 export const getAllInfiniteOutputSchemaNormalized = z.object({

@@ -5,8 +5,8 @@ export const pokemonOutputSchema = z.object({
     z.object({
       ability: z.object({ name: z.string(), url: z.string() }),
       is_hidden: z.boolean(),
-      slot: z.number()
-    })
+      slot: z.number(),
+    }),
   ),
   base_experience: z.number(),
   cries: z.object({ latest: z.string(), legacy: z.string() }),
@@ -14,8 +14,8 @@ export const pokemonOutputSchema = z.object({
   game_indices: z.array(
     z.object({
       game_index: z.number(),
-      version: z.object({ name: z.string(), url: z.string() })
-    })
+      version: z.object({ name: z.string(), url: z.string() }),
+    }),
   ),
   height: z.number(),
   held_items: z.array(z.unknown()),
@@ -30,10 +30,10 @@ export const pokemonOutputSchema = z.object({
           level_learned_at: z.number(),
           move_learn_method: z.object({ name: z.string(), url: z.string() }),
           order: z.union([z.number(), z.string(), z.null()]),
-          version_group: z.object({ name: z.string(), url: z.string() })
-        })
-      )
-    })
+          version_group: z.object({ name: z.string(), url: z.string() }),
+        }),
+      ),
+    }),
   ),
   name: z.string(),
   order: z.number(),
@@ -52,17 +52,17 @@ export const pokemonOutputSchema = z.object({
     other: z.object({
       dream_world: z.object({
         front_default: z.string(),
-        front_female: z.union([z.string(), z.null()])
+        front_female: z.union([z.string(), z.null()]),
       }),
       home: z.object({
         front_default: z.string(),
         front_female: z.union([z.string(), z.null()]),
         front_shiny: z.string(),
-        front_shiny_female: z.union([z.string(), z.null()])
+        front_shiny_female: z.union([z.string(), z.null()]),
       }),
       "official-artwork": z.object({
         front_default: z.string(),
-        front_shiny: z.string()
+        front_shiny: z.string(),
       }),
       showdown: z.object({
         back_default: z.string(),
@@ -72,8 +72,8 @@ export const pokemonOutputSchema = z.object({
         front_default: z.string(),
         front_female: z.union([z.string(), z.null()]),
         front_shiny: z.string(),
-        front_shiny_female: z.union([z.string(), z.null()])
-      })
+        front_shiny_female: z.union([z.string(), z.null()]),
+      }),
     }),
     versions: z.object({
       "generation-i": z.object({
@@ -83,7 +83,7 @@ export const pokemonOutputSchema = z.object({
           back_transparent: z.string(),
           front_default: z.string(),
           front_gray: z.string(),
-          front_transparent: z.string()
+          front_transparent: z.string(),
         }),
         yellow: z.object({
           back_default: z.string(),
@@ -91,8 +91,8 @@ export const pokemonOutputSchema = z.object({
           back_transparent: z.string(),
           front_default: z.string(),
           front_gray: z.string(),
-          front_transparent: z.string()
-        })
+          front_transparent: z.string(),
+        }),
       }),
       "generation-ii": z.object({
         crystal: z.object({
@@ -103,40 +103,40 @@ export const pokemonOutputSchema = z.object({
           front_default: z.string(),
           front_shiny: z.string(),
           front_shiny_transparent: z.string(),
-          front_transparent: z.string()
+          front_transparent: z.string(),
         }),
         gold: z.object({
           back_default: z.string(),
           back_shiny: z.string(),
           front_default: z.string(),
           front_shiny: z.string(),
-          front_transparent: z.string()
+          front_transparent: z.string(),
         }),
         silver: z.object({
           back_default: z.string(),
           back_shiny: z.string(),
           front_default: z.string(),
           front_shiny: z.string(),
-          front_transparent: z.string()
-        })
+          front_transparent: z.string(),
+        }),
       }),
       "generation-iii": z.object({
         emerald: z.object({
           front_default: z.string(),
-          front_shiny: z.string()
+          front_shiny: z.string(),
         }),
         "firered-leafgreen": z.object({
           back_default: z.string(),
           back_shiny: z.string(),
           front_default: z.string(),
-          front_shiny: z.string()
+          front_shiny: z.string(),
         }),
         "ruby-sapphire": z.object({
           back_default: z.string(),
           back_shiny: z.string(),
           front_default: z.string(),
-          front_shiny: z.string()
-        })
+          front_shiny: z.string(),
+        }),
       }),
       "generation-iv": z.object({
         "diamond-pearl": z.object({
@@ -147,7 +147,7 @@ export const pokemonOutputSchema = z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
+          front_shiny_female: z.union([z.string(), z.null()]),
         }),
         "heartgold-soulsilver": z.object({
           back_default: z.string(),
@@ -157,7 +157,7 @@ export const pokemonOutputSchema = z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
+          front_shiny_female: z.union([z.string(), z.null()]),
         }),
         platinum: z.object({
           back_default: z.string(),
@@ -167,8 +167,8 @@ export const pokemonOutputSchema = z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
-        })
+          front_shiny_female: z.union([z.string(), z.null()]),
+        }),
       }),
       "generation-v": z.object({
         "black-white": z.object({
@@ -180,7 +180,7 @@ export const pokemonOutputSchema = z.object({
             front_default: z.string(),
             front_female: z.union([z.string(), z.null()]),
             front_shiny: z.string(),
-            front_shiny_female: z.union([z.string(), z.null()])
+            front_shiny_female: z.union([z.string(), z.null()]),
           }),
           back_default: z.string(),
           back_female: z.union([z.string(), z.null()]),
@@ -189,49 +189,55 @@ export const pokemonOutputSchema = z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
-        })
+          front_shiny_female: z.union([z.string(), z.null()]),
+        }),
       }),
       "generation-vi": z.object({
         "omegaruby-alphasapphire": z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
+          front_shiny_female: z.union([z.string(), z.null()]),
         }),
         "x-y": z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
-        })
+          front_shiny_female: z.union([z.string(), z.null()]),
+        }),
       }),
       "generation-vii": z.object({
-        icons: z.object({ front_default: z.string(), front_female: z.union([z.string(), z.null()]) }),
+        icons: z.object({
+          front_default: z.string(),
+          front_female: z.union([z.string(), z.null()]),
+        }),
         "ultra-sun-ultra-moon": z.object({
           front_default: z.string(),
           front_female: z.union([z.string(), z.null()]),
           front_shiny: z.string(),
-          front_shiny_female: z.union([z.string(), z.null()])
-        })
+          front_shiny_female: z.union([z.string(), z.null()]),
+        }),
       }),
       "generation-viii": z.object({
-        icons: z.object({ front_default: z.string(), front_female: z.union([z.string(), z.null()]) })
-      })
-    })
+        icons: z.object({
+          front_default: z.string(),
+          front_female: z.union([z.string(), z.null()]),
+        }),
+      }),
+    }),
   }),
   stats: z.array(
     z.object({
       base_stat: z.number(),
       effort: z.number(),
-      stat: z.object({ name: z.string(), url: z.string() })
-    })
+      stat: z.object({ name: z.string(), url: z.string() }),
+    }),
   ),
   types: z.array(
     z.object({
       slot: z.number(),
-      type: z.object({ name: z.string(), url: z.string() })
-    })
+      type: z.object({ name: z.string(), url: z.string() }),
+    }),
   ),
-  weight: z.number()
+  weight: z.number(),
 });

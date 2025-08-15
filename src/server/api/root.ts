@@ -11,7 +11,7 @@ import { pokemonRouter } from "./routers/pokemon";
 export const appRouter = createTRPCRouter({
   pokemon: pokemonRouter,
   language: languageRouter,
-  generation: generationRouter
+  generation: generationRouter,
 });
 
 // export type definition of API

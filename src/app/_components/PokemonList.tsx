@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef } from "react";
 import { FilterContext } from "./FilterContext";
 
-
 type Props = {
   pokemons: Pokemon[];
   onLoadMore?: () => void;
@@ -16,7 +15,22 @@ type Props = {
 // Utilidad para convertir números a romanos
 function toRoman(num: number): string {
   const romanNumerals = [
-    "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV",
+    "",
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX",
+    "X",
+    "XI",
+    "XII",
+    "XIII",
+    "XIV",
+    "XV",
   ];
   return romanNumerals[num] ?? num.toString();
 }
@@ -24,18 +38,22 @@ function toRoman(num: number): string {
 export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
   const loadMoreRef = useRef<HTMLButtonElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const { scrollPosition, setScrollPosition, hasMoreResults } = useContext(FilterContext);
+  const { scrollPosition, setScrollPosition, hasMoreResults } =
+    useContext(FilterContext);
 
   // Carga automática al hacer scroll al final
   useEffect(() => {
     if (!onLoadMore || isLoadingMore) return;
     const btn = loadMoreRef.current;
     if (!btn) return;
-    const observer = new window.IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        onLoadMore();
-      }
-    }, { threshold: 1 });
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 1 },
+    );
     observer.observe(btn);
     return () => observer.disconnect();
   }, [onLoadMore, isLoadingMore]);
@@ -45,8 +63,8 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = scrollPosition;
     }
-  // Ejecutar al montar componente, deliberadamente.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Ejecutar al montar componente, deliberadamente.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Guardar scroll al hacer scroll
@@ -66,12 +84,18 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
   };
 
   // helpers para acceder a sprite, artwork y nombre
-  const getSprite = (poke: Pokemon) => poke.sprites?.[0]?.sprites?.front_default ?? null;
-  const getName = (poke: Pokemon) => poke.especie?.nombre_localizado?.[0]?.name ?? poke.name;
-  const getGeneration = (poke: Pokemon) => poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
+  const getSprite = (poke: Pokemon) =>
+    poke.sprites?.[0]?.sprites?.front_default ?? null;
+  const getName = (poke: Pokemon) =>
+    poke.especie?.nombre_localizado?.[0]?.name ?? poke.name;
+  const getGeneration = (poke: Pokemon) =>
+    poke.especie?.generation?.id ? toRoman(poke.especie.generation.id) : "-";
 
   return (
-    <div ref={scrollContainerRef} style={{ overflowY: "auto", maxHeight: "70vh" }}>
+    <div
+      ref={scrollContainerRef}
+      style={{ overflowY: "auto", maxHeight: "70vh" }}
+    >
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -89,7 +113,13 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
               style={{ borderBottom: "1px solid #23214a", cursor: "pointer" }}
               onClick={() => handleRowClick(pokemon)}
             >
-              <td style={{ padding: "8px", fontFamily: "monospace", color: "#eab308" }}>
+              <td
+                style={{
+                  padding: "8px",
+                  fontFamily: "monospace",
+                  color: "#eab308",
+                }}
+              >
                 #{pokemon.id.toString().padStart(3, "0")}
               </td>
               <td style={{ padding: "8px" }}>
@@ -110,9 +140,16 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
                 {getName(pokemon)}
               </td>
               <td style={{ padding: "8px", textAlign: "left" }}>
-                {pokemon.pokemontypes?.map((type: { type: { name: string; nombre_localizado?: { name: string }[] } }) => (
-                  <PokemonType key={type.type.name} typeData={type} />
-                ))}
+                {pokemon.pokemontypes?.map(
+                  (type: {
+                    type: {
+                      name: string;
+                      nombre_localizado?: { name: string }[];
+                    };
+                  }) => (
+                    <PokemonType key={type.type.name} typeData={type} />
+                  ),
+                )}
               </td>
               <td style={{ padding: "8px", color: "#fff", textAlign: "left" }}>
                 {getGeneration(pokemon)}
@@ -124,8 +161,8 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
       {onLoadMore && (
         <div style={{ textAlign: "center", margin: "2rem 0" }}>
           {isLoadingMore ? (
-            <div className="flex justify-center items-center">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-yellow-400 mx-auto"></div>
+            <div className="flex items-center justify-center">
+              <div className="mx-auto h-10 w-10 animate-spin rounded-full border-t-4 border-b-4 border-yellow-400"></div>
             </div>
           ) : hasMoreResults ? (
             <button
@@ -140,14 +177,16 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
                 fontWeight: "bold",
                 cursor: "pointer",
                 fontSize: "1.1rem",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
               }}
               disabled={!hasMoreResults}
             >
               Cargar más
             </button>
           ) : (
-            <div style={{ color: "#888", fontWeight: "bold", marginTop: "1rem" }}>
+            <div
+              style={{ color: "#888", fontWeight: "bold", marginTop: "1rem" }}
+            >
               No hay más resultados
             </div>
           )}

@@ -5,11 +5,16 @@ import { buildPokedexQuery } from "@/server/schemas/getAllInfinite.query";
 import { getPokemonBySlugInput } from "@/server/schemas/getPokemonBySlug.input";
 import { getPokemonBySlugOutput } from "@/server/schemas/getPokemonBySlug.output";
 import { PokemonBySlug } from "@/server/schemas/getPokemonBySlug.query";
-import type { infer as InferType } from 'zod';
-import { getPokemonCache, getSearchCache, setPokemonCache, setSearchCache } from "./file-cache";
+import type { infer as InferType } from "zod";
+import {
+  getPokemonCache,
+  getSearchCache,
+  setPokemonCache,
+  setSearchCache,
+} from "./file-cache";
 
 type GetAllInfiniteOutput = InferType<typeof getAllInfiniteOutputSchema>;
-type PokemonType = GetAllInfiniteOutput['pokemon'][number];
+type PokemonType = GetAllInfiniteOutput["pokemon"][number];
 
 export const pokemonRouter = createTRPCRouter({
   getAllInfiniteScroll: publicProcedure
@@ -22,7 +27,7 @@ export const pokemonRouter = createTRPCRouter({
       const isValidCache = getAllInfiniteOutputSchema.safeParse(cachedArray);
       if (cachedArray && Array.isArray(cachedArray.pokemon)) {
         if (isValidCache.success) {
-            return cachedArray;
+          return cachedArray;
         }
       }
       const {
@@ -68,7 +73,9 @@ export const pokemonRouter = createTRPCRouter({
       const rawData = await ctx.graphql.request(PokemonBySlug, variables);
       const parsed = getAllInfiniteOutputSchema.parse(rawData);
       if (Array.isArray(parsed.pokemon) && parsed.pokemon.length > 0) {
-        const valid = parsed.pokemon.find(p => p && typeof p.id === 'number' && typeof p.name === 'string');
+        const valid = parsed.pokemon.find(
+          (p) => p && typeof p.id === "number" && typeof p.name === "string",
+        );
         if (valid) {
           setPokemonCache(slug, valid);
           return { pokemon: [valid] };

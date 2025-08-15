@@ -25,9 +25,11 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           <FilterProvider>
-          <div className="min-h-screen flex bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-            <main className="flex-1 flex flex-col h-screen overflow-y-auto">{children}</main>
-          </div>
+            <div className="flex min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+              <main className="flex h-screen flex-1 flex-col overflow-y-auto">
+                {children}
+              </main>
+            </div>
           </FilterProvider>
         </TRPCReactProvider>
       </body>

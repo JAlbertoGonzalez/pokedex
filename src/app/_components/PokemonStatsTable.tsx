@@ -11,7 +11,14 @@ import {
 import React, { useState } from "react";
 import { Radar } from "react-chartjs-2";
 
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+);
 
 interface Props {
   stats: NormalizedStats;
@@ -60,7 +67,14 @@ export const PokemonStatsTable: React.FC<Props> = ({ stats }) => {
 
   return (
     <div>
-      <div style={{ display: "flex", gap: 0, marginBottom: 0, justifyContent: "flex-start" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 0,
+          marginBottom: 0,
+          justifyContent: "flex-start",
+        }}
+      >
         <button
           onClick={() => setTab("tabla")}
           style={{
@@ -72,7 +86,8 @@ export const PokemonStatsTable: React.FC<Props> = ({ stats }) => {
             fontWeight: tab === "tabla" ? "bold" : "normal",
             cursor: "pointer",
             outline: "none",
-            borderBottom: tab === "tabla" ? "2px solid #eab308" : "2px solid #23214a",
+            borderBottom:
+              tab === "tabla" ? "2px solid #eab308" : "2px solid #23214a",
           }}
         >
           Tabla
@@ -88,7 +103,8 @@ export const PokemonStatsTable: React.FC<Props> = ({ stats }) => {
             fontWeight: tab === "grafico" ? "bold" : "normal",
             cursor: "pointer",
             outline: "none",
-            borderBottom: tab === "grafico" ? "2px solid #eab308" : "2px solid #23214a",
+            borderBottom:
+              tab === "grafico" ? "2px solid #eab308" : "2px solid #23214a",
           }}
         >
           Gráfico
@@ -106,30 +122,73 @@ export const PokemonStatsTable: React.FC<Props> = ({ stats }) => {
         }}
       >
         {tab === "tabla" ? (
-          <table style={{ width: "100%", marginTop: 4, background: "#18173a", borderRadius: 8, maxWidth: 220 }}>
+          <table
+            style={{
+              width: "100%",
+              marginTop: 4,
+              background: "#18173a",
+              borderRadius: 8,
+              maxWidth: 220,
+            }}
+          >
             <tbody>
               {Object.entries(stats.labels).map(([key, label]) => (
                 <tr key={key}>
-                  <td style={{ color: "#fff", padding: "4px 8px", textAlign: "right" }}>{(() => {
-                    const parts = String(label).split("/").map(s => s.trim()).filter(Boolean);
-                    return parts.slice(-2).join("/");
-                  })()}</td>
-                  <td style={{ color: "#eab308", fontWeight: "bold", padding: "4px 8px", textAlign: "right" }}>{stats.values[key as keyof typeof stats.values]}</td>
+                  <td
+                    style={{
+                      color: "#fff",
+                      padding: "4px 8px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {(() => {
+                      const parts = String(label)
+                        .split("/")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                      return parts.slice(-2).join("/");
+                    })()}
+                  </td>
+                  <td
+                    style={{
+                      color: "#eab308",
+                      fontWeight: "bold",
+                      padding: "4px 8px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {stats.values[key as keyof typeof stats.values]}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <div style={{ width: 320, height: 320, minWidth: 220, background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>
-              <Radar
-                data={data}
-                options={options}
-              />
+          <div
+            style={{
+              width: 320,
+              height: 320,
+              minWidth: 220,
+              background: "transparent",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <Radar data={data} options={options} />
             </div>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
