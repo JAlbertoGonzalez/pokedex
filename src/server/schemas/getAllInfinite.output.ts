@@ -54,6 +54,63 @@ export const FlavorTextSchema = z.object({
 export const LocalizedNameSchema = z.object({ name: z.string() });
 
 // =============================
+// Entidad con nombre + nombres localizados (admite variantes por tabla)
+// =============================
+export const NamedEntitySchema = z.object({
+  name: z.string(),
+  // alias común que usamos en la query
+  nombre_localizado: z.array(LocalizedNameSchema).optional(),
+  // posibles arrays según la tabla subyacente
+  itemnames: z.array(LocalizedNameSchema).optional(),
+  movenames: z.array(LocalizedNameSchema).optional(),
+  typenames: z.array(LocalizedNameSchema).optional(),
+  locationnames: z.array(LocalizedNameSchema).optional(),
+  evolutiontriggernames: z.array(LocalizedNameSchema).optional(),
+});
+
+// =============================
+// Detalles/condiciones de evolución (trigger + condiciones)
+// =============================
+// =============================
+// Detalles/condiciones de evolución (trigger + condiciones)
+// Aceptamos tanto `trigger` como `evolutiontrigger` y los unificamos a `trigger`
+// =============================
+const EvolutionDetailBaseSchema = z
+  .object({
+    // Trigger principal (nivel, piedra, intercambio, etc.)
+    trigger: NamedEntitySchema.optional(),
+    evolutiontrigger: NamedEntitySchema.optional(),
+
+    // Condiciones numéricas / flags habituales
+    min_level: z.number().int().nullish(),
+    gender_id: z.number().int().nullish(),
+    time_of_day: z.string().nullish(),
+    min_happiness: z.number().int().nullish(),
+    min_beauty: z.number().int().nullish(),
+    min_affection: z.number().int().nullish(),
+    relative_physical_stats: z.number().int().nullish(),
+    needs_overworld_rain: z.boolean().nullish(),
+    turn_upside_down: z.boolean().nullish(),
+
+    // Relaciones con entidades con nombre
+    item: NamedEntitySchema.optional(),
+    held_item: NamedEntitySchema.optional(),
+    location: NamedEntitySchema.optional(),
+    known_move: NamedEntitySchema.optional(),
+    known_move_type: NamedEntitySchema.optional(),
+    trade_species: NamedEntitySchema.optional(),
+    party_type: NamedEntitySchema.optional(),
+    party_species: NamedEntitySchema.optional(),
+  })
+  // Permitimos campos extra por compatibilidad con pequeñas diferencias del schema
+  .passthrough();
+
+export const EvolutionDetailSchema = EvolutionDetailBaseSchema.transform((e) => {
+  const { evolutiontrigger, trigger, ...rest } = e;
+  return { ...rest, trigger: trigger ?? evolutiontrigger };
+});
+
+// =============================
 // Referencia mínima a Pokémon (para sprites de cadena/anterior/siguientes)
 // =============================
 export const PokemonRefSchema = z.object({
@@ -70,6 +127,10 @@ export const SpeciesMinSchema = z.object({
   pokemonspeciesnames: z.array(LocalizedNameSchema),
   // pokemons(limit: 1) → array (0..1) con el Pokémon por defecto
   pokemon_default: z.array(PokemonRefSchema),
+  // Detalles/condiciones de evolución desde la especie "origen" hasta esta
+  // (solo presentes en "siguientes" o en la relación inversa en "anterior").
+  // En la cadena completa pueden venir o no: por eso es opcional.
+  detalles_evolucion: z.array(EvolutionDetailSchema).optional(),
 });
 
 // Generación con nombre localizado
