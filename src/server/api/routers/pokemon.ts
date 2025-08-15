@@ -11,7 +11,7 @@ import {
   getSearchCache,
   setPokemonCache,
   setSearchCache,
-} from "./file-cache";
+} from "../../utils/file-cache";
 
 type GetAllInfiniteOutput = InferType<typeof getAllInfiniteOutputSchema>;
 type PokemonType = GetAllInfiniteOutput["pokemon"][number];

@@ -2,7 +2,7 @@
 import type { GetAllInfiniteOutput } from "@/server/schemas/getAllInfinite.output";
 import { api } from "@/trpc/react";
 import React, { useEffect, useState } from "react";
-import { FilterContext } from "./search/FilterContext";
+import { FilterContext } from "./FilterContext";
 
 export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

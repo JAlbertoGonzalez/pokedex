@@ -4,7 +4,7 @@ import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef } from "react";
-import { FilterContext } from "./FilterContext";
+import { FilterContext } from "./search/FilterContext";
 
 type Props = {
   pokemons: Pokemon[];

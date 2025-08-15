@@ -4,7 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
-import { FilterProvider } from "./_components/FilterProvider";
+import { FilterProvider } from "./_components/search/FilterProvider";
 
 export const metadata: Metadata = {
   title: "Pokédex Alberto",

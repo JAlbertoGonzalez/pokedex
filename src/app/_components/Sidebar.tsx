@@ -1,10 +1,10 @@
 "use client";
 
 import { useContext } from "react";
-import { FilterContext } from "./FilterContext";
-import { GenerationFilter } from "./GenerationFilter";
-import { TextSearch } from "./TextSearch";
-import { TypeFilter } from "./TypeFilter";
+import { FilterContext } from "./search/FilterContext";
+import { GenerationFilter } from "./search/GenerationFilter";
+import { TextSearch } from "./search/TextSearch";
+import { TypeFilter } from "./search/TypeFilter";
 // ...import duplicado eliminado...
 
 export function Sidebar() {
