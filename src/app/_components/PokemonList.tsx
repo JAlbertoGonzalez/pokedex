@@ -3,8 +3,7 @@ import { PokemonType } from "@/app/_components/PokemonType";
 import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { FilterContext } from "./FilterContext";
 
 
@@ -46,6 +45,8 @@ export function PokemonList({ pokemons, onLoadMore, isLoadingMore }: Props) {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = scrollPosition;
     }
+  // Ejecutar al montar componente, deliberadamente.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Guardar scroll al hacer scroll

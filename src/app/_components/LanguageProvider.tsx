@@ -1,5 +1,4 @@
-import { api } from "@/trpc/react";
-import React, { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import React, { createContext, useContext, useState, type ReactNode } from "react";
 
 type LanguageContextProps = {
   languageCode: string;

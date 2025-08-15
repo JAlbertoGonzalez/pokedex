@@ -1,10 +1,5 @@
 "use client";
 
-
-
-const LANGUAGE = "es";
-
-
 // Colores para cada tipo de Pokémon (inglés)
 export const POKEMON_TYPE_COLORS: { type: string; color: string }[] = [
   { type: "normal", color: "#A8A77A" },

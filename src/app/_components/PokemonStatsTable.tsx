@@ -1,12 +1,12 @@
 import type { NormalizedStats } from "@/server/schemas/getAllInfinite.output";
 import {
-    Chart as ChartJS,
-    Filler,
-    Legend,
-    LineElement,
-    PointElement,
-    RadialLinearScale,
-    Tooltip,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
 } from "chart.js";
 import React, { useState } from "react";
 import { Radar } from "react-chartjs-2";
@@ -19,7 +19,6 @@ interface Props {
 
 export const PokemonStatsTable: React.FC<Props> = ({ stats }) => {
   const [tab, setTab] = useState<"tabla" | "grafico">("tabla");
-  const labels = Object.values(stats.labels);
   const values = Object.values(stats.values) as number[];
   const maxStat = Math.max(...values);
   const radarMax = maxStat + 20;
