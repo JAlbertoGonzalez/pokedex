@@ -1,10 +1,10 @@
 "use client";
-import { PokemonType } from "@/app/_components/PokemonType";
+import { PokemonType } from "@/app/_components/search/results/PokemonType";
 import type { Pokemon } from "@/server/schemas/getAllInfinite.output";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef } from "react";
-import { FilterContext } from "./search/FilterContext";
+import { FilterContext } from "../FilterContext";
 
 type Props = {
   pokemons: Pokemon[];

@@ -1,5 +1,5 @@
 "use client";
-import { POKEMON_TYPE_COLORS } from "@/app/_components/PokemonType";
+import { POKEMON_TYPE_COLORS } from "@/app/_components/search/results/PokemonType";
 import dynamic from "next/dynamic";
 import { useContext } from "react";
 import { FilterContext } from "./FilterContext";

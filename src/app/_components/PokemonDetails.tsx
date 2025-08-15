@@ -1,5 +1,5 @@
-import { PokemonStatsTable } from "@/app/_components/PokemonStatsTable";
-import { PokemonType } from "@/app/_components/PokemonType";
+import { PokemonStatsTable } from "@/app/_components/search/results/PokemonStatsTable";
+import { PokemonType } from "@/app/_components/search/results/PokemonType";
 import { extractSpriteUrls } from "@/app/_components/utils/extractSpriteUrls";
 import { toRoman } from "@/app/_components/utils/toRoman";
 import { normalizePokemonStats } from "@/server/schemas/getAllInfinite.output";

@@ -1,6 +1,6 @@
 "use client";
-import { PokemonList } from "@/app/_components/PokemonList";
 import { FilterContext } from "@/app/_components/search/FilterContext";
+import { PokemonList } from "@/app/_components/search/results/PokemonList";
 import { Sidebar } from "@/app/_components/Sidebar";
 import { useContext } from "react";
 export default function Home() {
