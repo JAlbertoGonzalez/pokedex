@@ -12,21 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Copiar .env.example a .env
-        run: cp .env.example .env
-
-      - name: Build project
-        run: yarn build
-
       - name: Deploy y reinicio en servidor
         uses: appleboy/ssh-action@v0.1.10
         with:

@@ -169,3 +169,20 @@ ssh-keygen -t ed25519 -C "github-actions-deploy"
 3. Copia el contenido de la clave privada (`id_ed25519`) y guárdalo como valor del secret `SSH_KEY` en GitHub.
 
 ---
+
+## Flujo actualizado del deploy automático
+
+Ahora el workflow de GitHub Actions solo ejecuta comandos en tu servidor personal. El proceso es:
+
+1. Se conecta por SSH al servidor usando la clave privada configurada en los secrets.
+2. Se sitúa en el directorio definido por `SSH_TARGET`.
+3. Sincroniza el repositorio con los últimos cambios de la rama `main` usando:
+   - `git fetch --all`
+   - `git reset --hard origin/main`
+4. Instala dependencias con `yarn install --frozen-lockfile`.
+5. Compila el proyecto con `yarn build`.
+6. Reinicia la aplicación con `pm2 restart pokedex`.
+
+Todo el proceso ocurre en el servidor personal, por lo que no se instalan dependencias ni se compila nada en la máquina virtual de GitHub.
+
+---
