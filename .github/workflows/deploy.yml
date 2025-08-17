@@ -1,0 +1,43 @@
+name: Deploy to Personal Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Copiar .env.example a .env
+        run: cp .env.example .env
+
+      - name: Build project
+        run: yarn build
+
+      - name: Deploy y reinicio en servidor
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.SSH_TARGET }}
+            git fetch --all
+            git reset --hard origin/main
+            yarn install --frozen-lockfile
+            yarn build
+            pm2 restart pokedex

@@ -84,7 +84,7 @@ Este proyecto implementa una Pokédex moderna usando Next.js, tRPC, Prisma y Rea
 
 ## Integración y UX
 
-- **Acumulación de resultados**: Solo al paginar, nunca al cambiar filtros.
+- **Acumulación de resultados**: Solo al paginación, nunca al cambiar filtros.
 - **Deshabilitar paginación**: Botón "Cargar más" deshabilitado y mensaje cuando no hay más resultados.
 - **Actualización reactiva**: Cambios de filtros, paginación y scroll se reflejan automáticamente en la UI.
 
@@ -94,3 +94,78 @@ Este proyecto implementa una Pokédex moderna usando Next.js, tRPC, Prisma y Rea
 - **Tipado estricto**: TypeScript en todo el proyecto.
 - **Next.js**: SSR/ISR listo para producción.
 - **Prisma**: ORM para acceso a base de datos y migraciones.
+
+# Despliegue automático (CI/CD) en servidor personal
+
+Este proyecto incluye un workflow de GitHub Actions para desplegar automáticamente en tu servidor personal por SSH.
+
+## Requisitos previos
+
+1. **Servidor con acceso SSH** y Node.js/yarn instalado.
+2. **Claves SSH**: Genera una clave privada sin passphrase para usar en GitHub Actions.
+3. **Configura los secrets en GitHub**:
+   - `SSH_HOST`: IP o dominio del servidor
+   - `SSH_USER`: usuario SSH
+   - `SSH_KEY`: clave privada (contenido del archivo, formato PEM)
+   - `SSH_PORT`: puerto SSH (por defecto 22)
+   - `SSH_TARGET`: ruta destino en el servidor (ejemplo: `/home/usuario/pokedex`)
+
+## Pasos para configurar el deploy
+
+### 1. Generar clave SSH
+```sh
+ssh-keygen -t ed25519 -C "github-actions-deploy"
+# Guarda la clave privada (id_ed25519) y pública (id_ed25519.pub)
+```
+- Añade la clave pública (`id_ed25519.pub`) al archivo `~/.ssh/authorized_keys` del usuario en tu servidor.
+- Copia el contenido de la clave privada (`id_ed25519`) y guárdalo como secret `SSH_KEY` en GitHub.
+
+### 2. Añadir secrets en GitHub
+- Ve a tu repositorio > Settings > Secrets and variables > Actions > New repository secret
+- Añade los siguientes secrets:
+  - `SSH_HOST`
+  - `SSH_USER`
+  - `SSH_KEY`
+  - `SSH_PORT`
+  - `SSH_TARGET`
+
+### 3. ¿Qué hace el workflow?
+- Instala dependencias con yarn
+- Copia `.env.example` a `.env`
+- Compila el proyecto
+- Copia todos los archivos al servidor por SSH
+- Ejecuta en el servidor:
+  - `yarn install --production --frozen-lockfile`
+  - `yarn start`
+
+### 4. Personalización
+- Puedes modificar el script de post-deploy en `.github/workflows/deploy.yml` para reiniciar servicios, limpiar archivos, etc.
+
+### 5. Notas
+- El workflow se ejecuta automáticamente al hacer push a la rama `main`.
+- Asegúrate de que el usuario SSH tenga permisos de escritura en la carpeta destino.
+- Si usas PM2 u otro gestor de procesos, puedes modificar el script para reiniciar el servicio tras el deploy.
+
+## Explicación de variables (secrets) para el deploy
+
+- **SSH_HOST**: IP o dominio de tu servidor personal donde se hará el deploy. Ejemplo: `192.168.1.100` o `mi-servidor.com`.
+- **SSH_USER**: Usuario SSH con permisos para copiar archivos y ejecutar comandos en el servidor. Ejemplo: `ubuntu`, `deploy`, `root`.
+- **SSH_KEY**: Clave privada SSH (contenido del archivo, formato PEM) que usará GitHub Actions para autenticarse en el servidor. Debe generarse sin passphrase. Nunca compartas esta clave fuera de GitHub Secrets y tu máquina local.
+  - ¿Cómo funciona? GitHub Actions usa esta clave para conectarse por SSH al servidor y copiar archivos o ejecutar comandos, de forma segura y automatizada. La clave pública debe estar en `~/.ssh/authorized_keys` del usuario en el servidor.
+- **SSH_PORT**: Puerto SSH de tu servidor. Por defecto es `22`, pero puede ser otro si lo cambiaste por seguridad.
+- **SSH_TARGET**: Ruta absoluta en el servidor donde se copiarán los archivos del proyecto. Ejemplo: `/home/ubuntu/pokedex`.
+
+### Ejemplo de generación y uso de la clave SSH
+
+1. Genera el par de claves:
+   ```sh
+   ssh-keygen -t ed25519 -C "github-actions-deploy"
+   # Guarda la clave privada (id_ed25519) y pública (id_ed25519.pub)
+   ```
+2. Añade la clave pública al servidor:
+   ```sh
+   cat id_ed25519.pub >> ~/.ssh/authorized_keys
+   ```
+3. Copia el contenido de la clave privada (`id_ed25519`) y guárdalo como valor del secret `SSH_KEY` en GitHub.
+
+---
